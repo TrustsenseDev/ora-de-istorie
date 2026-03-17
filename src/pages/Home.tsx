@@ -1,0 +1,207 @@
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Link } from 'react-router-dom';
+import { ChevronRight, Clock, HelpCircle, Lock, Search } from 'lucide-react';
+import { lessons } from '../data/lessons';
+
+export default function Home() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  // Generate a pool of unique keywords (titles + topics)
+  const allKeywords = Array.from(new Set([
+    ...lessons.map(l => l.title),
+    ...lessons.flatMap(l => l.topics)
+  ]));
+
+  // Filter suggestions based on query
+  const suggestions = searchQuery.trim() === '' 
+    ? [] 
+    : allKeywords
+        .filter(k => k.toLowerCase().includes(searchQuery.toLowerCase()) && k.toLowerCase() !== searchQuery.toLowerCase())
+        .slice(0, 5);
+
+  const filteredLessons = lessons.filter(lesson => {
+    const query = searchQuery.toLowerCase();
+    return (
+      lesson.title.toLowerCase().includes(query) ||
+      lesson.description.toLowerCase().includes(query) ||
+      lesson.topics.some(topic => topic.toLowerCase().includes(query))
+    );
+  });
+
+  // Handle click outside to close suggestions
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
+        setIsSearchFocused(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="text-center max-w-3xl mx-auto mb-16"
+      >
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-8">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+          </span>
+          Platformă Modernă de Învățare
+        </div>
+        <h1 className="text-5xl sm:text-7xl font-display font-bold text-white mb-6 tracking-tight leading-tight">
+          Istoria, <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-200 to-amber-500">reimaginată.</span>
+        </h1>
+        <p className="text-lg text-slate-400 leading-relaxed max-w-2xl mx-auto">
+          Lecții interactive, cronologii vizuale și teste de verificare. 
+          Tot ce ai nevoie pentru a lua o notă mare la examenul de Bacalaureat, structurat clar și ușor de reținut.
+        </p>
+      </motion.div>
+
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="max-w-2xl mx-auto mb-16 relative z-50"
+        ref={searchContainerRef}
+      >
+        <div className="relative group">
+          <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+            <Search className="h-5 w-5 text-slate-400 group-focus-within:text-amber-500 transition-colors" />
+          </div>
+          <input
+            type="text"
+            className="block w-full pl-14 pr-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all shadow-lg backdrop-blur-sm"
+            placeholder="Caută o lecție sau un subiect (ex: 1848, Cuza, Constituție)..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setIsSearchFocused(true);
+            }}
+            onFocus={() => setIsSearchFocused(true)}
+          />
+        </div>
+
+        <AnimatePresence>
+          {isSearchFocused && suggestions.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-full left-0 right-0 mt-2 bg-slate-800/95 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
+            >
+              <div className="p-2">
+                {suggestions.map((suggestion, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setSearchQuery(suggestion);
+                      setIsSearchFocused(false);
+                    }}
+                    className="w-full text-left px-4 py-3 rounded-xl text-slate-300 hover:bg-white/10 hover:text-amber-400 transition-colors flex items-center gap-3"
+                  >
+                    <Search className="w-4 h-4 opacity-50" />
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+
+      {filteredLessons.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredLessons.map((lesson, index) => (
+            <motion.div
+              key={lesson.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="h-full"
+            >
+              {lesson.available ? (
+                <Link 
+                  to={`/lesson/${lesson.id}`}
+                  className="flex flex-col h-full bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] hover:border-amber-500/30 transition-all group"
+                >
+                  <div className="flex items-center gap-2 mb-6">
+                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-wider border border-emerald-500/20">
+                      Disponibil
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-white mb-4 group-hover:text-amber-400 transition-colors">
+                    {lesson.title}
+                  </h3>
+                  <p className="text-sm text-slate-400 mb-8 line-clamp-3 leading-relaxed">
+                    {lesson.description}
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-8">
+                    {lesson.topics.slice(0, 3).map(topic => (
+                      <span key={topic} className="px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 text-xs">
+                        {topic}
+                      </span>
+                    ))}
+                    {lesson.topics.length > 3 && (
+                      <span className="px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-400 text-xs">
+                        +{lesson.topics.length - 3}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+                    <div className="flex items-center gap-4 text-xs text-slate-500 font-medium">
+                      <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {lesson.duration}</span>
+                      <span className="flex items-center gap-1.5"><HelpCircle className="w-4 h-4" /> {lesson.questionsCount} Qs</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 transition-colors">
+                      <ChevronRight className="w-4 h-4 text-amber-500 group-hover:text-slate-950 transition-colors" />
+                    </div>
+                  </div>
+                </Link>
+              ) : (
+                <div className="flex flex-col h-full bg-slate-900/40 border border-white/5 rounded-3xl p-8 opacity-60 cursor-not-allowed">
+                  <div className="flex items-center gap-2 mb-6">
+                    <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-semibold uppercase tracking-wider border border-slate-700">
+                      În curând
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-display font-bold text-white mb-4">
+                    {lesson.title}
+                  </h3>
+                  <p className="text-sm text-slate-400 mb-8 line-clamp-3 leading-relaxed">
+                    {lesson.description}
+                  </p>
+                  <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+                    <span className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                      <Lock className="w-4 h-4" /> În pregătire
+                    </span>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center py-20"
+        >
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-white/5 mb-4">
+            <Search className="h-8 w-8 text-slate-500" />
+          </div>
+          <h3 className="text-xl font-display font-semibold text-white mb-2">Nu am găsit nicio lecție</h3>
+          <p className="text-slate-400">Încearcă să folosești alte cuvinte cheie pentru căutare.</p>
+        </motion.div>
+      )}
+    </div>
+  );
+}
