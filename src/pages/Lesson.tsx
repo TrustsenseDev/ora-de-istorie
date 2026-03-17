@@ -6,11 +6,14 @@ import { lessonContent } from '../data/lessonContent';
 import Timeline from '../components/lesson/Timeline';
 import ConceptCards from '../components/lesson/ConceptCards';
 import Quiz from '../components/lesson/Quiz';
+import LessonProgressBar from '../components/LessonProgressBar';
+import { useProgress } from '../hooks/useProgress';
 
 export default function Lesson() {
   const { id } = useParams();
   const lessonMeta = lessons.find(l => l.id === id);
   const content = id ? lessonContent[id] : null;
+  const { isCompleted, markCompleted, getScore } = useProgress();
 
   if (!lessonMeta || !content) {
     return (
@@ -23,8 +26,13 @@ export default function Lesson() {
     );
   }
 
+  const completed = id ? isCompleted(id) : false;
+  const score = id ? getScore(id) : undefined;
+
   return (
     <div className="pb-24">
+      <LessonProgressBar lessonTitle={lessonMeta.title} isCompleted={completed} />
+
       {/* Hero Section */}
       <motion.div 
         initial={{ opacity: 0 }}
@@ -47,6 +55,12 @@ export default function Lesson() {
               <span className="text-amber-400 font-medium tracking-wide uppercase text-sm">
                 Lecție Interactivă
               </span>
+              {completed && (
+                <span className="ml-auto flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Completată {score !== undefined ? `· ${score}%` : ''}
+                </span>
+              )}
             </div>
             <h1 className="text-3xl md:text-5xl font-display font-bold text-white mb-6 leading-tight">
               {lessonMeta.title}
@@ -109,7 +123,10 @@ export default function Lesson() {
             </p>
           </div>
           
-          <Quiz questions={content.quiz} />
+          <Quiz
+            questions={content.quiz}
+            onComplete={(score) => id && markCompleted(id, score)}
+          />
         </motion.section>
       </div>
     </div>

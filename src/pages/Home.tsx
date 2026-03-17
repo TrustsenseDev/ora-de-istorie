@@ -1,21 +1,24 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Clock, HelpCircle, Lock, Search } from 'lucide-react';
+import { ChevronRight, Clock, HelpCircle, Lock, Search, CheckCircle2, Trophy } from 'lucide-react';
 import { lessons } from '../data/lessons';
+import { useProgress } from '../hooks/useProgress';
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
+  const { isCompleted, getScore, completedCount } = useProgress();
 
-  // Generate a pool of unique keywords (titles + topics)
+  const totalAvailable = lessons.filter(l => l.available).length;
+  const progressPercent = totalAvailable > 0 ? Math.round((completedCount / totalAvailable) * 100) : 0;
+
   const allKeywords = Array.from(new Set([
     ...lessons.map(l => l.title),
     ...lessons.flatMap(l => l.topics)
   ]));
 
-  // Filter suggestions based on query
   const suggestions = searchQuery.trim() === '' 
     ? [] 
     : allKeywords
@@ -31,7 +34,6 @@ export default function Home() {
     );
   });
 
-  // Handle click outside to close suggestions
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
@@ -47,7 +49,7 @@ export default function Home() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center max-w-3xl mx-auto mb-16"
+        className="text-center max-w-3xl mx-auto mb-10"
       >
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-400 text-sm font-medium mb-8">
           <span className="relative flex h-2 w-2">
@@ -64,6 +66,38 @@ export default function Home() {
           Tot ce ai nevoie pentru a lua o notă mare la examenul de Bacalaureat, structurat clar și ușor de reținut.
         </p>
       </motion.div>
+
+      {/* Progress Overview Card */}
+      {completedCount > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="max-w-2xl mx-auto mb-10"
+        >
+          <div className="bg-gradient-to-r from-amber-500/10 to-emerald-500/10 border border-amber-500/20 rounded-2xl p-5 flex items-center gap-5">
+            <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+              <Trophy className="w-6 h-6 text-amber-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-white">
+                  {completedCount} din {totalAvailable} lecții completate
+                </span>
+                <span className="text-sm font-bold text-amber-400">{progressPercent}%</span>
+              </div>
+              <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                />
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
@@ -120,74 +154,93 @@ export default function Home() {
 
       {filteredLessons.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredLessons.map((lesson, index) => (
-            <motion.div
-              key={lesson.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className="h-full"
-            >
-              {lesson.available ? (
-                <Link 
-                  to={`/lesson/${lesson.id}`}
-                  className="flex flex-col h-full bg-white/5 border border-white/10 rounded-3xl p-8 hover:bg-white/[0.07] hover:border-amber-500/30 transition-all group"
-                >
-                  <div className="flex items-center gap-2 mb-6">
-                    <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-wider border border-emerald-500/20">
-                      Disponibil
-                    </span>
-                  </div>
-                  <h3 className="text-2xl font-display font-bold text-white mb-4 group-hover:text-amber-400 transition-colors">
-                    {lesson.title}
-                  </h3>
-                  <p className="text-sm text-slate-400 mb-8 line-clamp-3 leading-relaxed">
-                    {lesson.description}
-                  </p>
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {lesson.topics.slice(0, 3).map(topic => (
-                      <span key={topic} className="px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 text-xs">
-                        {topic}
-                      </span>
-                    ))}
-                    {lesson.topics.length > 3 && (
-                      <span className="px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-400 text-xs">
-                        +{lesson.topics.length - 3}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                    <div className="flex items-center gap-4 text-xs text-slate-500 font-medium">
-                      <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {lesson.duration}</span>
-                      <span className="flex items-center gap-1.5"><HelpCircle className="w-4 h-4" /> {lesson.questionsCount} Qs</span>
+          {filteredLessons.map((lesson, index) => {
+            const done = isCompleted(lesson.id);
+            const score = getScore(lesson.id);
+            return (
+              <motion.div
+                key={lesson.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.07 }}
+                className="h-full"
+              >
+                {lesson.available ? (
+                  <Link 
+                    to={`/lesson/${lesson.id}`}
+                    className={`flex flex-col h-full border rounded-3xl p-8 transition-all group ${
+                      done
+                        ? 'bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40'
+                        : 'bg-white/5 border-white/10 hover:bg-white/[0.07] hover:border-amber-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 mb-6">
+                      {done ? (
+                        <span className="px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-semibold uppercase tracking-wider border border-emerald-500/25 flex items-center gap-1.5">
+                          <CheckCircle2 className="w-3 h-3" /> Completată
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-400 text-xs font-semibold uppercase tracking-wider border border-emerald-500/20">
+                          Disponibil
+                        </span>
+                      )}
+                      {score !== undefined && (
+                        <span className="ml-auto text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20">
+                          {score}%
+                        </span>
+                      )}
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 transition-colors">
-                      <ChevronRight className="w-4 h-4 text-amber-500 group-hover:text-slate-950 transition-colors" />
+                    <h3 className="text-2xl font-display font-bold text-white mb-4 group-hover:text-amber-400 transition-colors">
+                      {lesson.title}
+                    </h3>
+                    <p className="text-sm text-slate-400 mb-8 line-clamp-3 leading-relaxed">
+                      {lesson.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-8">
+                      {lesson.topics.slice(0, 3).map(topic => (
+                        <span key={topic} className="px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-300 text-xs">
+                          {topic}
+                        </span>
+                      ))}
+                      {lesson.topics.length > 3 && (
+                        <span className="px-2.5 py-1 rounded-lg bg-slate-800/50 border border-slate-700/50 text-slate-400 text-xs">
+                          +{lesson.topics.length - 3}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+                      <div className="flex items-center gap-4 text-xs text-slate-500 font-medium">
+                        <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> {lesson.duration}</span>
+                        <span className="flex items-center gap-1.5"><HelpCircle className="w-4 h-4" /> {lesson.questionsCount} Qs</span>
+                      </div>
+                      <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500 transition-colors">
+                        <ChevronRight className="w-4 h-4 text-amber-500 group-hover:text-slate-950 transition-colors" />
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="flex flex-col h-full bg-slate-900/40 border border-white/5 rounded-3xl p-8 opacity-60 cursor-not-allowed">
+                    <div className="flex items-center gap-2 mb-6">
+                      <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-semibold uppercase tracking-wider border border-slate-700">
+                        În curând
+                      </span>
+                    </div>
+                    <h3 className="text-2xl font-display font-bold text-white mb-4">
+                      {lesson.title}
+                    </h3>
+                    <p className="text-sm text-slate-400 mb-8 line-clamp-3 leading-relaxed">
+                      {lesson.description}
+                    </p>
+                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+                      <span className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
+                        <Lock className="w-4 h-4" /> În pregătire
+                      </span>
                     </div>
                   </div>
-                </Link>
-              ) : (
-                <div className="flex flex-col h-full bg-slate-900/40 border border-white/5 rounded-3xl p-8 opacity-60 cursor-not-allowed">
-                  <div className="flex items-center gap-2 mb-6">
-                    <span className="px-3 py-1 rounded-full bg-slate-800 text-slate-400 text-xs font-semibold uppercase tracking-wider border border-slate-700">
-                      În curând
-                    </span>
-                  </div>
-                  <h3 className="text-2xl font-display font-bold text-white mb-4">
-                    {lesson.title}
-                  </h3>
-                  <p className="text-sm text-slate-400 mb-8 line-clamp-3 leading-relaxed">
-                    {lesson.description}
-                  </p>
-                  <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                    <span className="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-                      <Lock className="w-4 h-4" /> În pregătire
-                    </span>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          ))}
+                )}
+              </motion.div>
+            );
+          })}
         </div>
       ) : (
         <motion.div 
