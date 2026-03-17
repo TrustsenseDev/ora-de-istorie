@@ -11,9 +11,10 @@ export default function LessonProgressBar({ lessonTitle, isCompleted }: Props) {
   const progress = useScrollProgress();
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50">
-      {/* Progress bar */}
-      <div className="h-1 bg-slate-800/80 backdrop-blur-sm">
+    // top-16 = exact înălțimea navbar-ului (h-16), z-40 = sub navbar (z-50)
+    <div className="fixed top-16 left-0 right-0 z-40">
+      {/* Thin amber progress line */}
+      <div className="h-0.5 bg-slate-800">
         <motion.div
           className="h-full bg-gradient-to-r from-amber-500 to-amber-400"
           style={{ width: `${progress}%` }}
@@ -21,15 +22,15 @@ export default function LessonProgressBar({ lessonTitle, isCompleted }: Props) {
         />
       </div>
 
-      {/* Mini info bar shown after scrolling a bit */}
+      {/* Mini info bar — apare după ce scrollezi puțin */}
       {progress > 5 && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-950/90 backdrop-blur-md border-b border-white/5 px-4 py-2 flex items-center justify-between max-w-5xl mx-auto"
+          className="bg-slate-950/95 backdrop-blur-md border-b border-white/5 px-4 py-2 flex items-center justify-between"
         >
-          <span className="text-sm text-slate-400 truncate max-w-xs">{lessonTitle}</span>
-          <div className="flex items-center gap-3">
+          <span className="text-sm text-slate-400 truncate max-w-xs md:max-w-lg">{lessonTitle}</span>
+          <div className="flex items-center gap-3 flex-shrink-0">
             {isCompleted && (
               <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" /> Completată
