@@ -9,9 +9,10 @@ interface QuizProps {
     correctAnswer: number;
     explanation: string;
   }[];
+  onComplete?: (score: number) => void;
 }
 
-export default function Quiz({ questions }: QuizProps) {
+export default function Quiz({ questions, onComplete }: QuizProps) {
   const [currentQ, setCurrentQ] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -22,7 +23,6 @@ export default function Quiz({ questions }: QuizProps) {
     if (isAnswered) return;
     setSelectedOption(index);
     setIsAnswered(true);
-    
     if (index === questions[currentQ].correctAnswer) {
       setScore(s => s + 1);
     }
@@ -34,7 +34,10 @@ export default function Quiz({ questions }: QuizProps) {
       setSelectedOption(null);
       setIsAnswered(false);
     } else {
+      const finalScore = Math.round(((score + (selectedOption === questions[currentQ].correctAnswer ? 0 : 0)) / questions.length) * 100);
+      const percentage = Math.round((score / questions.length) * 100);
       setShowResults(true);
+      onComplete?.(percentage);
     }
   };
 
@@ -56,11 +59,14 @@ export default function Quiz({ questions }: QuizProps) {
         animate={{ opacity: 1, scale: 1 }}
         className="bg-slate-900 border border-white/10 rounded-3xl p-8 md:p-12 text-center max-w-2xl mx-auto"
       >
-        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 ${isGood ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+        <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 ${
+          isGood ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+        }`}>
           <Trophy className="w-10 h-10" />
         </div>
         <h3 className="text-3xl font-display font-bold text-white mb-2">Test Finalizat!</h3>
-        <p className="text-slate-400 mb-8">Ai răspuns corect la {score} din {questions.length} întrebări.</p>
+        <p className="text-slate-400 mb-2">Ai răspuns corect la {score} din {questions.length} întrebări.</p>
+        <p className={`text-2xl font-bold mb-8 ${ isGood ? 'text-emerald-400' : 'text-amber-400'}`}>{percentage}%</p>
         
         <div className="w-full bg-slate-800 rounded-full h-4 mb-8 overflow-hidden">
           <motion.div 
@@ -68,8 +74,14 @@ export default function Quiz({ questions }: QuizProps) {
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
             className={`h-full rounded-full ${isGood ? 'bg-emerald-500' : 'bg-amber-500'}`}
-          ></motion.div>
+          />
         </div>
+
+        {isGood ? (
+          <p className="text-emerald-400 text-sm font-medium mb-6">✨ Bravo! Lecția e marcată ca finalizată în profilul tău.</p>
+        ) : (
+          <p className="text-amber-400 text-sm font-medium mb-6">📚 Mai recitește lecția și încearcă din nou!</p>
+        )}
 
         <button 
           onClick={resetQuiz}
@@ -91,6 +103,15 @@ export default function Quiz({ questions }: QuizProps) {
           Întrebarea {currentQ + 1} din {questions.length}
         </span>
         <span className="text-slate-500 text-sm font-medium">Scor: {score}</span>
+      </div>
+
+      {/* Mini progress bar inside quiz */}
+      <div className="w-full bg-slate-800 rounded-full h-1.5 mb-8 overflow-hidden">
+        <motion.div
+          className="h-full bg-amber-500 rounded-full"
+          animate={{ width: `${((currentQ) / questions.length) * 100}%` }}
+          transition={{ duration: 0.4 }}
+        />
       </div>
 
       <h3 className="text-2xl font-medium text-white mb-8 leading-snug">
