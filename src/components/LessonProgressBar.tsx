@@ -11,7 +11,6 @@ export default function LessonProgressBar({ lessonTitle, isCompleted }: Props) {
   const progress = useScrollProgress();
 
   return (
-    // top-16 = exact înălțimea navbar-ului (h-16), z-40 = sub navbar (z-50)
     <div className="fixed top-16 left-0 right-0 z-40">
       {/* Thin amber progress line */}
       <div className="h-0.5 bg-slate-800">
@@ -22,18 +21,18 @@ export default function LessonProgressBar({ lessonTitle, isCompleted }: Props) {
         />
       </div>
 
-      {/* Mini info bar — apare după ce scrollezi puțin */}
+      {/* Mini info bar — appears after scrolling a bit */}
       {progress > 5 && (
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-950/95 backdrop-blur-md border-b border-white/5 px-4 py-2 flex items-center justify-between"
+          className="bg-slate-950/95 backdrop-blur-md border-b border-white/5 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-3"
         >
-          <span className="text-sm text-slate-400 truncate max-w-xs md:max-w-lg">{lessonTitle}</span>
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <span className="text-xs sm:text-sm text-slate-400 truncate">{lessonTitle}</span>
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {isCompleted && (
-              <span className="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5" /> Completată
+              <span className="hidden xs:flex items-center gap-1 text-xs text-emerald-400 font-medium">
+                <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Completată
               </span>
             )}
             <span className="text-xs font-bold text-amber-400">{Math.round(progress)}%</span>

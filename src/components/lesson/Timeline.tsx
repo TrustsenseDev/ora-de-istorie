@@ -27,41 +27,48 @@ interface TimelineProps {
 
 export default function Timeline({ items }: TimelineProps) {
   return (
-    <div className="relative py-10">
-      {/* Vertical Line */}
-      <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-amber-500/30 to-transparent -translate-x-1/2"></div>
-      
-      <div className="space-y-12">
+    <div className="relative py-4 sm:py-10">
+      {/* Vertical line — left on mobile, center on desktop */}
+      <div className="absolute left-5 sm:left-8 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-amber-500/30 to-transparent -translate-x-1/2"></div>
+
+      <div className="space-y-8 sm:space-y-12">
         {items.map((item, index) => {
           const Icon = iconMap[item.icon] || Star;
           const isEven = index % 2 === 0;
-          
+
           return (
-            <motion.div 
+            <motion.div
               key={index}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true, margin: '-80px' }}
               transition={{ duration: 0.5 }}
-              className={`relative flex flex-col md:flex-row items-start ${isEven ? 'md:flex-row-reverse' : ''} gap-8 md:gap-16`}
+              className={`relative flex items-start gap-0 md:gap-16 ${
+                isEven ? 'md:flex-row-reverse' : 'md:flex-row'
+              } md:flex-row`}
             >
-              {/* Center Node */}
-              <div className="absolute left-8 md:left-1/2 w-12 h-12 bg-slate-950 border-4 border-slate-900 rounded-full flex items-center justify-center -translate-x-1/2 shadow-[0_0_15px_rgba(245,158,11,0.2)] z-10">
-                <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center text-amber-400">
-                  <Icon className="w-5 h-5" />
+              {/* Node — always left on mobile, centered on desktop */}
+              <div className="absolute left-5 sm:left-8 md:left-1/2 w-10 h-10 sm:w-12 sm:h-12 bg-slate-950 border-4 border-slate-900 rounded-full flex items-center justify-center -translate-x-1/2 shadow-[0_0_15px_rgba(245,158,11,0.2)] z-10">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-amber-500/20 rounded-full flex items-center justify-center text-amber-400">
+                  <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </div>
 
-              {/* Content Card */}
-              <div className="w-full pl-20 md:pl-0 md:w-1/2 flex flex-col pt-2">
-                <div className={`bg-white/5 border border-white/10 p-6 rounded-3xl hover:bg-white/[0.07] hover:border-amber-500/30 transition-colors ${isEven ? 'md:mr-12' : 'md:ml-12'}`}>
-                  <span className="inline-block px-3 py-1 bg-amber-500/10 text-amber-400 text-sm font-bold rounded-lg mb-4 border border-amber-500/20">
+              {/* Content — always to the right of node on mobile, alternating on desktop */}
+              <div className={`w-full pl-14 sm:pl-20 md:pl-0 md:w-1/2 pt-1 ${
+                isEven ? 'md:pr-12' : 'md:pl-12'
+              }`}>
+                <div className="bg-white/5 border border-white/10 p-4 sm:p-6 rounded-2xl sm:rounded-3xl hover:bg-white/[0.07] hover:border-amber-500/30 transition-colors">
+                  <span className="inline-block px-2.5 sm:px-3 py-0.5 sm:py-1 bg-amber-500/10 text-amber-400 text-xs sm:text-sm font-bold rounded-lg mb-3 sm:mb-4 border border-amber-500/20">
                     {item.year}
                   </span>
-                  <h3 className="text-xl font-display font-bold text-white mb-3">{item.title}</h3>
-                  <p className="text-slate-400 text-sm leading-relaxed">{item.description}</p>
+                  <h3 className="text-base sm:text-xl font-display font-bold text-white mb-2 sm:mb-3 leading-snug">{item.title}</h3>
+                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">{item.description}</p>
                 </div>
               </div>
+
+              {/* Spacer for alternating desktop layout */}
+              <div className="hidden md:block md:w-1/2" />
             </motion.div>
           );
         })}
