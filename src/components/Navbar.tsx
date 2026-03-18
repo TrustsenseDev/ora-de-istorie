@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Home, BrainCircuit, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -6,10 +6,34 @@ import BacCountdown from './BacCountdown';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentY = window.scrollY;
+      // Show when scrolling up or near top; hide when scrolling down
+      if (currentY < 60 || currentY < lastScrollY.current) {
+        setIsVisible(true);
+      } else if (currentY > lastScrollY.current + 5) {
+        setIsVisible(false);
+        setIsMenuOpen(false); // close menu when hiding
+      }
+      lastScrollY.current = currentY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <div className="sticky top-0 z-50 w-full">
+    <motion.div
+      className="sticky top-0 z-50 w-full"
+      animate={{ y: isVisible ? 0 : '-100%', opacity: isVisible ? 1 : 0 }}
+      transition={{ duration: 0.25, ease: 'easeInOut' }}
+    >
       <BacCountdown />
       <nav className="w-full border-b border-white/10 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,6 +109,6 @@ export default function Navbar() {
           )}
         </AnimatePresence>
       </nav>
-    </div>
+    </motion.div>
   );
 }
