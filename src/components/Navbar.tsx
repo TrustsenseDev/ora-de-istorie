@@ -3,116 +3,91 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const lastScrollY = useRef(0);
   const [visible, setVisible] = useState(true);
-  const location = useLocation();
+  const lastY = useRef(0);
+  const loc = useLocation();
 
   useEffect(() => {
-    const handleScroll = () => {
+    const onScroll = () => {
       const y = window.scrollY;
-      setScrolled(y > 20);
-      if (y < 60 || y < lastScrollY.current) {
-        setVisible(true);
-      } else if (y > lastScrollY.current + 8) {
-        setVisible(false);
-        setIsMenuOpen(false);
-      }
-      lastScrollY.current = y;
+      setScrolled(y > 10);
+      if (y < 50 || y < lastY.current) setVisible(true);
+      else if (y > lastY.current + 6) { setVisible(false); setMenuOpen(false); }
+      lastY.current = y;
     };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
     <motion.header
-      className="sticky top-0 z-50 w-full"
       animate={{ y: visible ? 0 : '-100%' }}
-      transition={{ duration: 0.22, ease: 'easeInOut' }}
+      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      style={{ position: 'sticky', top: 0, zIndex: 50, width: '100%' }}
     >
-      {/* BAC Countdown Strip */}
       <BacStrip />
+      <nav style={{
+        background: scrolled ? 'rgba(12,12,12,0.96)' : 'var(--bg)',
+        backdropFilter: scrolled ? 'blur(10px)' : 'none',
+        borderBottom: '1px solid var(--border)',
+        transition: 'background 0.25s',
+      }}>
+        <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', height: 52, gap: 8 }}>
 
-      <nav
-        style={{
-          background: scrolled ? 'rgba(10, 9, 8, 0.95)' : 'var(--bg)',
-          backdropFilter: scrolled ? 'blur(12px)' : 'none',
-          borderBottom: '1px solid var(--border)',
-          transition: 'background 0.3s, backdrop-filter 0.3s',
-        }}
-      >
-        <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
-
-            {/* Logo */}
-            <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-              <div style={{
-                width: 28, height: 28,
-                background: 'var(--accent)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <span style={{ color: 'white', fontSize: 14, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>H</span>
-              </div>
-              <span style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 18,
-                color: 'var(--text-primary)',
-                fontStyle: 'italic',
-                letterSpacing: '-0.01em',
-              }}>
-                IstorieBac
-              </span>
-            </Link>
-
-            {/* Desktop nav */}
-            <div className="hidden-mobile" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <NavLink to="/" active={location.pathname === '/'}>Lecții</NavLink>
-              <NavLink to="/simulare" active={location.pathname === '/simulare'} accent>
-                Simulare Examen
-              </NavLink>
+          {/* Logo */}
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginRight: 'auto' }}>
+            <div style={{ width: 24, height: 24, background: 'var(--accent)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
+              <span style={{ color: 'white', fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>H</span>
             </div>
+            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+              IstorieBac
+            </span>
+          </Link>
 
-            {/* Mobile toggle */}
-            <button
-              onClick={() => setIsMenuOpen(p => !p)}
-              style={{
-                display: 'none',
-                background: 'none', border: '1px solid var(--border)',
-                color: 'var(--text-secondary)', padding: '8px 12px',
-                cursor: 'pointer', fontSize: 13, letterSpacing: '0.05em',
-                fontFamily: 'var(--font-mono)', textTransform: 'uppercase',
-              }}
-              className="mobile-menu-btn"
-            >
-              {isMenuOpen ? 'Închide' : 'Meniu'}
-            </button>
+          {/* Desktop links */}
+          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }} className="nav-desktop">
+            <NavLink to="/" active={loc.pathname === '/'}>Lecții</NavLink>
+            <NavLink to="/simulare" active={loc.pathname === '/simulare'} accent>Simulare</NavLink>
           </div>
+
+          {/* Mobile toggle */}
+          <button
+            onClick={() => setMenuOpen(p => !p)}
+            className="nav-mobile-btn"
+            style={{
+              display: 'none', background: 'none',
+              border: '1px solid var(--border)', padding: '5px 10px',
+              color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 12,
+              fontFamily: 'var(--font-mono)', letterSpacing: '0.06em',
+            }}
+          >
+            {menuOpen ? '✕' : 'menu'}
+          </button>
         </div>
 
-        {/* Mobile menu */}
+        {/* Mobile dropdown */}
         <AnimatePresence>
-          {isMenuOpen && (
+          {menuOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
               style={{ overflow: 'hidden', borderTop: '1px solid var(--border)' }}
             >
-              <div style={{ padding: '12px 24px 20px' }}>
-                <MobileNavLink to="/" onClick={() => setIsMenuOpen(false)}>Lecții</MobileNavLink>
-                <MobileNavLink to="/simulare" onClick={() => setIsMenuOpen(false)} accent>Simulare Examen</MobileNavLink>
+              <div style={{ padding: '10px 20px 16px' }}>
+                <MLink to="/" onClick={() => setMenuOpen(false)}>Lecții</MLink>
+                <MLink to="/simulare" onClick={() => setMenuOpen(false)} accent>Simulare</MLink>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
-
       <style>{`
-        @media (max-width: 640px) {
-          .hidden-mobile { display: none !important; }
-          .mobile-menu-btn { display: block !important; }
+        @media (max-width: 580px) {
+          .nav-desktop { display: none !important; }
+          .nav-mobile-btn { display: block !important; }
         }
       `}</style>
     </motion.header>
@@ -121,102 +96,69 @@ export default function Navbar() {
 
 function NavLink({ to, children, active, accent }: any) {
   return (
-    <Link
-      to={to}
-      style={{
-        display: 'inline-flex', alignItems: 'center',
-        padding: accent ? '8px 18px' : '8px 16px',
-        textDecoration: 'none',
-        fontSize: 13,
-        fontWeight: 500,
-        letterSpacing: '0.02em',
-        fontFamily: 'var(--font-mono)',
-        color: accent ? 'white' : active ? 'var(--text-primary)' : 'var(--text-secondary)',
-        background: accent ? 'var(--accent)' : active ? 'var(--bg-muted)' : 'transparent',
-        border: `1px solid ${accent ? 'var(--accent)' : active ? 'var(--border-strong)' : 'transparent'}`,
-        transition: 'all 0.15s',
-      }}
-    >
+    <Link to={to} style={{
+      padding: '6px 14px', textDecoration: 'none', fontSize: 13, fontWeight: 500,
+      color: accent ? 'white' : active ? 'var(--text-primary)' : 'var(--text-secondary)',
+      background: accent ? 'var(--accent)' : active ? 'var(--bg-muted)' : 'transparent',
+      border: `1px solid ${accent ? 'transparent' : active ? 'var(--border)' : 'transparent'}`,
+      transition: 'all 0.12s',
+      letterSpacing: '-0.01em',
+    }}>
       {children}
     </Link>
   );
 }
 
-function MobileNavLink({ to, children, onClick, accent }: any) {
+function MLink({ to, children, onClick, accent }: any) {
   return (
-    <Link
-      to={to}
-      onClick={onClick}
-      style={{
-        display: 'block',
-        padding: '12px 16px',
-        margin: '4px 0',
-        textDecoration: 'none',
-        fontSize: 14,
-        fontFamily: 'var(--font-mono)',
-        letterSpacing: '0.04em',
-        color: accent ? 'white' : 'var(--text-secondary)',
-        background: accent ? 'var(--accent)' : 'var(--bg-muted)',
-        border: '1px solid var(--border)',
-      }}
-    >
+    <Link to={to} onClick={onClick} style={{
+      display: 'block', padding: '10px 12px', margin: '3px 0',
+      textDecoration: 'none', fontSize: 14, fontWeight: 500,
+      color: accent ? 'white' : 'var(--text-secondary)',
+      background: accent ? 'var(--accent)' : 'var(--bg-muted)',
+      border: '1px solid var(--border)',
+    }}>
       {children}
     </Link>
   );
 }
 
-// Inline BAC countdown strip
 function BacStrip() {
-  const [time, setTime] = useState(getTimeLeft());
+  const [time, setTime] = useState(getLeft());
   useEffect(() => {
-    const id = setInterval(() => setTime(getTimeLeft()), 1000);
+    const id = setInterval(() => setTime(getLeft()), 1000);
     return () => clearInterval(id);
   }, []);
   if (!time) return null;
-  const urgent = time.days < 30;
   return (
     <div style={{
-      background: urgent ? 'rgba(192, 57, 43, 0.12)' : 'var(--bg-muted)',
-      borderBottom: `1px solid ${urgent ? 'var(--accent-border)' : 'var(--border)'}`,
-      padding: '7px 24px',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20,
-      flexWrap: 'wrap',
+      background: 'var(--bg-card)',
+      borderBottom: '1px solid var(--border)',
+      padding: '5px 20px',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap',
     }}>
-      <span style={{
-        fontFamily: 'var(--font-mono)', fontSize: 10,
-        letterSpacing: '0.12em', textTransform: 'uppercase',
-        color: urgent ? 'var(--accent)' : 'var(--text-muted)',
-      }}>
+      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
         Istorie BAC 2026
       </span>
-      <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-        {[
-          { v: time.days, l: 'zile' },
-          { v: time.hours, l: 'ore' },
-          { v: time.minutes, l: 'min' },
-          { v: time.seconds, l: 'sec' },
-        ].map(({ v, l }, i) => (
-          <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        {[{ v: time.days, l: 'zile' }, { v: time.hours, l: 'ore' }, { v: time.minutes, l: 'min' }, { v: time.seconds, l: 'sec' }].map(({ v, l }, i) => (
+          <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ textAlign: 'center' }}>
-              <div style={{
-                fontFamily: 'var(--font-mono)', fontWeight: 500,
-                fontSize: 13, color: urgent ? 'var(--accent)' : 'var(--text-primary)',
-                letterSpacing: '0.05em',
-              }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-primary)', fontWeight: 500 }}>
                 {String(v).padStart(2, '0')}
               </div>
-              <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{l}</div>
+              <div style={{ fontSize: 8, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{l}</div>
             </div>
-            {i < 3 && <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 11 }}>:</span>}
+            {i < 3 && <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>:</span>}
           </div>
         ))}
       </div>
-      <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>30 iunie — proba E.c</span>
+      <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>30 iunie · E.c</span>
     </div>
   );
 }
 
-function getTimeLeft() {
+function getLeft() {
   const diff = new Date('2026-06-30T09:00:00').getTime() - Date.now();
   if (diff <= 0) return null;
   return {

@@ -10,20 +10,16 @@ import { useScrollProgress } from '../hooks/useScrollProgress';
 
 export default function Lesson() {
   const { id } = useParams();
-  const lessonMeta = lessons.find(l => l.id === id);
+  const meta = lessons.find(l => l.id === id);
   const content = id ? lessonContent[id] : null;
   const { isCompleted, markCompleted, getScore } = useProgress();
-  const scrollPct = useScrollProgress();
+  const scroll = useScrollProgress();
 
-  if (!lessonMeta || !content) {
+  if (!meta || !content) {
     return (
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)' }}>
-          Lecția nu a fost găsită.
-        </p>
-        <Link to="/" style={{ color: 'var(--accent)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>
-          ← Înapoi
-        </Link>
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 20px', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 14 }}>Lecția nu a fost găsită.</p>
+        <Link to="/" style={{ color: 'var(--accent)', fontSize: 13 }}>← Înapoi</Link>
       </div>
     );
   }
@@ -33,171 +29,126 @@ export default function Lesson() {
 
   return (
     <>
-      {/* Scroll progress line */}
-      <div style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
-        height: 2, background: 'transparent',
-      }}>
-        <motion.div
-          style={{ height: '100%', background: 'var(--accent)', width: `${scrollPct}%`, right: 'auto' }}
-        />
+      {/* Scroll progress */}
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 100 }}>
+        <div style={{ width: `${scroll}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.1s' }} />
       </div>
 
-      <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px 80px' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', padding: '0 20px 100px' }}>
 
-        {/* Back + meta */}
+        {/* Back + meta bar */}
         <div style={{
-          padding: '28px 0 24px',
-          borderBottom: '1px solid var(--border)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          flexWrap: 'wrap', gap: 12,
+          padding: '20px 0 18px', borderBottom: '1px solid var(--border)',
+          flexWrap: 'wrap', gap: 10,
         }}>
-          <Link
-            to="/"
-            style={{
-              fontFamily: 'var(--font-mono)', fontSize: 11,
-              letterSpacing: '0.1em', textTransform: 'uppercase',
-              color: 'var(--text-muted)', textDecoration: 'none',
-              display: 'flex', alignItems: 'center', gap: 8,
-              transition: 'color 0.15s',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+          <Link to="/" style={{
+            fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none',
+            display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'color 0.12s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+          onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
           >
             ← Toate lecțiile
           </Link>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
             {done && (
               <span style={{
-                fontFamily: 'var(--font-mono)', fontSize: 10,
-                letterSpacing: '0.1em', textTransform: 'uppercase',
-                color: '#4ade80', padding: '4px 10px',
-                border: '1px solid rgba(74, 222, 128, 0.2)',
-                background: 'rgba(74, 222, 128, 0.06)',
+                fontSize: 11, color: '#4ade80',
+                padding: '2px 8px', border: '1px solid rgba(74,222,128,0.2)',
+                background: 'rgba(74,222,128,0.05)',
               }}>
-                ✓ Completat {score !== undefined ? `· ${score}%` : ''}
+                ✓ completat {score !== undefined ? `· ${score}%` : ''}
               </span>
             )}
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
-              {lessonMeta.duration}
-            </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
-              {lessonMeta.questionsCount} întrebări
-            </span>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{meta.duration}</span>
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>{meta.questionsCount} întrebări</span>
           </div>
         </div>
 
-        {/* Title block */}
+        {/* Title */}
         <motion.div
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          style={{ padding: '48px 0 40px', borderBottom: '1px solid var(--border)' }}
+          transition={{ duration: 0.4 }}
+          style={{ padding: '36px 0 32px', borderBottom: '1px solid var(--border)' }}
         >
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
-            {lessonMeta.topics.map(t => (
+          <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', marginBottom: 16 }}>
+            {meta.topics.map(t => (
               <span key={t} style={{
-                fontFamily: 'var(--font-mono)', fontSize: 10,
-                color: 'var(--text-muted)', letterSpacing: '0.08em',
-                padding: '3px 8px', border: '1px solid var(--border)',
-              }}>
-                {t}
-              </span>
+                fontSize: 10, color: 'var(--text-muted)',
+                padding: '2px 7px', border: '1px solid var(--border)',
+                letterSpacing: '0.04em',
+              }}>{t}</span>
             ))}
           </div>
-
           <h1 style={{
-            fontFamily: 'var(--font-display)', fontStyle: 'italic',
-            fontSize: 'clamp(28px, 5vw, 48px)',
-            color: 'var(--text-primary)', margin: '0 0 16px',
-            lineHeight: 1.2, letterSpacing: '-0.02em',
+            fontSize: 'clamp(22px, 4vw, 34px)',
+            fontWeight: 600, color: 'var(--text-primary)',
+            margin: '0 0 12px', lineHeight: 1.3, letterSpacing: '-0.02em',
           }}>
-            {lessonMeta.title}
+            {meta.title}
           </h1>
-          <p style={{
-            fontSize: 15, color: 'var(--text-secondary)',
-            lineHeight: 1.7, margin: 0, fontWeight: 300,
-          }}>
-            {lessonMeta.description}
+          <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6, margin: 0, fontWeight: 400 }}>
+            {meta.description}
           </p>
         </motion.div>
 
-        {/* Content sections */}
-        <div style={{ paddingTop: 48 }}>
+        {/* Sections */}
+        <div style={{ paddingTop: 40 }}>
           {content.sections.map((section, idx) => (
             <motion.section
               key={section.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-80px' }}
-              transition={{ duration: 0.45 }}
-              style={{
-                marginBottom: 64,
-                paddingBottom: 64,
-                borderBottom: '1px solid var(--border)',
-              }}
+              viewport={{ once: true, margin: '-60px' }}
+              transition={{ duration: 0.4 }}
+              style={{ marginBottom: 56, paddingBottom: 56, borderBottom: '1px solid var(--border)' }}
             >
-              {/* Section header */}
-              <div style={{
-                display: 'flex', alignItems: 'baseline', gap: 20,
-                marginBottom: 32,
-              }}>
+              {/* Section label + title */}
+              <div style={{ display: 'flex', gap: 16, alignItems: 'baseline', marginBottom: 28 }}>
                 <span style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 11,
+                  fontFamily: 'var(--font-mono)', fontSize: 10,
                   color: 'var(--text-muted)', letterSpacing: '0.1em',
-                  flexShrink: 0,
+                  flexShrink: 0, paddingTop: 2,
                 }}>
                   {String(idx + 1).padStart(2, '0')}
                 </span>
                 <h2 style={{
-                  fontFamily: 'var(--font-display)', fontStyle: 'italic',
-                  fontSize: 'clamp(18px, 3vw, 26px)',
+                  fontSize: 18, fontWeight: 600,
                   color: 'var(--text-primary)', margin: 0,
-                  lineHeight: 1.3, letterSpacing: '-0.01em',
+                  lineHeight: 1.35, letterSpacing: '-0.01em',
                 }}>
                   {section.title}
                 </h2>
               </div>
 
               {section.type === 'text' && (
-                <div className="lesson-text-content" style={{
-                  fontSize: 15, color: 'var(--text-secondary)',
-                  lineHeight: 1.75, fontWeight: 300,
-                }}>
-                  {section.content}
-                </div>
+                <div className="prose-content">{section.content}</div>
               )}
               {section.type === 'timeline' && section.items && <Timeline items={section.items} />}
               {section.type === 'cards' && section.items && <ConceptCards items={section.items} />}
             </motion.section>
           ))}
 
-          {/* Quiz section */}
+          {/* Quiz */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div style={{
-              display: 'flex', alignItems: 'baseline', gap: 20,
-              marginBottom: 40,
-            }}>
-              <span style={{
-                fontFamily: 'var(--font-mono)', fontSize: 11,
-                color: 'var(--text-muted)', letterSpacing: '0.1em',
-              }}>
-                Test
+            <div style={{ display: 'flex', gap: 16, alignItems: 'baseline', marginBottom: 32 }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
+                test
               </span>
               <h2 style={{
-                fontFamily: 'var(--font-display)', fontStyle: 'italic',
-                fontSize: 'clamp(18px, 3vw, 26px)',
-                color: 'var(--text-primary)', margin: 0,
-                lineHeight: 1.3, letterSpacing: '-0.01em',
+                fontSize: 18, fontWeight: 600, color: 'var(--text-primary)',
+                margin: 0, lineHeight: 1.35, letterSpacing: '-0.01em',
               }}>
                 Verifică-ți cunoștințele
               </h2>
             </div>
-
             <Quiz
               questions={content.quiz}
               onComplete={pct => id && markCompleted(id, pct)}
@@ -205,27 +156,6 @@ export default function Lesson() {
           </motion.section>
         </div>
       </div>
-
-      {/* Lesson text content styles */}
-      <style>{`
-        .lesson-text-content strong {
-          color: var(--text-primary);
-          font-weight: 500;
-        }
-        .lesson-text-content ul, .lesson-text-content ol {
-          padding-left: 24px;
-        }
-        .lesson-text-content li {
-          margin-bottom: 8px;
-        }
-        .lesson-text-content p {
-          margin-bottom: 16px;
-        }
-        .lesson-text-content em {
-          color: var(--text-primary);
-          font-style: italic;
-        }
-      `}</style>
     </>
   );
 }
