@@ -1,134 +1,231 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, BookOpen, Clock, CheckCircle2, GraduationCap } from 'lucide-react';
 import { lessons } from '../data/lessons';
 import { lessonContent } from '../data/lessonContent';
 import Timeline from '../components/lesson/Timeline';
 import ConceptCards from '../components/lesson/ConceptCards';
 import Quiz from '../components/lesson/Quiz';
-import LessonProgressBar from '../components/LessonProgressBar';
 import { useProgress } from '../hooks/useProgress';
+import { useScrollProgress } from '../hooks/useScrollProgress';
 
 export default function Lesson() {
   const { id } = useParams();
   const lessonMeta = lessons.find(l => l.id === id);
   const content = id ? lessonContent[id] : null;
   const { isCompleted, markCompleted, getScore } = useProgress();
+  const scrollPct = useScrollProgress();
 
   if (!lessonMeta || !content) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <h2 className="text-xl sm:text-2xl font-bold text-white mb-4">Lecția nu a fost găsită sau este în pregătire</h2>
-        <Link to="/" className="text-amber-400 hover:underline flex items-center gap-2 text-sm">
-          <ArrowLeft className="w-4 h-4" /> Înapoi la cursuri
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--text-muted)' }}>
+          Lecția nu a fost găsită.
+        </p>
+        <Link to="/" style={{ color: 'var(--accent)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>
+          ← Înapoi
         </Link>
       </div>
     );
   }
 
-  const completed = id ? isCompleted(id) : false;
+  const done = id ? isCompleted(id) : false;
   const score = id ? getScore(id) : undefined;
 
   return (
-    <div className="pb-24">
-      <LessonProgressBar lessonTitle={lessonMeta.title} isCompleted={completed} />
+    <>
+      {/* Scroll progress line */}
+      <div style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        height: 2, background: 'transparent',
+      }}>
+        <motion.div
+          style={{ height: '100%', background: 'var(--accent)', width: `${scrollPct}%`, right: 'auto' }}
+        />
+      </div>
 
-      {/* Hero Section */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-12"
-      >
-        <Link to="/" className="inline-flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white mb-6 sm:mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Înapoi la cursuri
-        </Link>
+      <div style={{ maxWidth: 800, margin: '0 auto', padding: '0 24px 80px' }}>
 
-        <div className="bg-white/5 border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 mb-12 sm:mb-16 relative overflow-hidden">
-          <div className="absolute top-0 right-0 -mt-16 -mr-16 w-64 h-64 bg-amber-500/10 blur-3xl rounded-full pointer-events-none"></div>
-          <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-64 h-64 bg-emerald-500/10 blur-3xl rounded-full pointer-events-none"></div>
-
-          <div className="relative z-10">
-            <div className="flex flex-wrap items-center gap-3 mb-5 sm:mb-6">
-              <div className="p-2.5 sm:p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
-                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" />
-              </div>
-              <span className="text-amber-400 font-medium tracking-wide uppercase text-xs sm:text-sm">
-                Lecție Interactivă
+        {/* Back + meta */}
+        <div style={{
+          padding: '28px 0 24px',
+          borderBottom: '1px solid var(--border)',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          flexWrap: 'wrap', gap: 12,
+        }}>
+          <Link
+            to="/"
+            style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11,
+              letterSpacing: '0.1em', textTransform: 'uppercase',
+              color: 'var(--text-muted)', textDecoration: 'none',
+              display: 'flex', alignItems: 'center', gap: 8,
+              transition: 'color 0.15s',
+            }}
+            onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
+            onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
+          >
+            ← Toate lecțiile
+          </Link>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            {done && (
+              <span style={{
+                fontFamily: 'var(--font-mono)', fontSize: 10,
+                letterSpacing: '0.1em', textTransform: 'uppercase',
+                color: '#4ade80', padding: '4px 10px',
+                border: '1px solid rgba(74, 222, 128, 0.2)',
+                background: 'rgba(74, 222, 128, 0.06)',
+              }}>
+                ✓ Completat {score !== undefined ? `· ${score}%` : ''}
               </span>
-              {completed && (
-                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-                  <CheckCircle2 className="w-3 h-3" />
-                  Completată {score !== undefined ? `· ${score}%` : ''}
-                </span>
-              )}
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-5xl font-display font-bold text-white mb-4 sm:mb-6 leading-tight">
-              {lessonMeta.title}
-            </h1>
-            <p className="text-sm sm:text-lg text-slate-300 leading-relaxed mb-6 sm:mb-8 max-w-3xl">
-              {lessonMeta.description}
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-sm text-slate-400">
-              <div className="flex items-center gap-2 bg-slate-900/50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/5">
-                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500" />
-                <span className="text-xs sm:text-sm">{lessonMeta.duration}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-slate-900/50 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/5">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-500" />
-                <span className="text-xs sm:text-sm">{lessonMeta.questionsCount} întrebări</span>
-              </div>
-            </div>
+            )}
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
+              {lessonMeta.duration}
+            </span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
+              {lessonMeta.questionsCount} întrebări
+            </span>
           </div>
         </div>
-      </motion.div>
 
-      {/* Dynamic Content Sections */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 sm:space-y-24">
-        {content.sections.map((section, idx) => (
-          <motion.section
-            key={section.id}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-100px' }}
-            transition={{ duration: 0.5 }}
-          >
-            <h2 className="text-xl sm:text-3xl font-display font-bold text-white mb-6 sm:mb-8 flex items-center gap-3 sm:gap-4">
-              <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs sm:text-sm font-bold border border-amber-500/30 flex-shrink-0">
-                {idx + 1}
-              </span>
-              <span className="leading-snug">{section.title}</span>
-            </h2>
-
-            {section.type === 'text' && section.content}
-            {section.type === 'timeline' && section.items && <Timeline items={section.items} />}
-            {section.type === 'cards' && section.items && <ConceptCards items={section.items} />}
-          </motion.section>
-        ))}
-
-        {/* Quiz Section */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="pt-10 sm:pt-12 border-t border-white/10"
+        {/* Title block */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ padding: '48px 0 40px', borderBottom: '1px solid var(--border)' }}
         >
-          <div className="text-center mb-8 sm:mb-12">
-            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-4 sm:mb-6">
-              <GraduationCap className="w-7 h-7 sm:w-8 sm:h-8" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-bold text-white mb-3 sm:mb-4">Verifică-ți cunoștințele</h2>
-            <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base px-2">
-              Rezolvă acest scurt test pentru a fixa informațiile din lecție. Vei primi explicații detaliate pentru fiecare răspuns.
-            </p>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24 }}>
+            {lessonMeta.topics.map(t => (
+              <span key={t} style={{
+                fontFamily: 'var(--font-mono)', fontSize: 10,
+                color: 'var(--text-muted)', letterSpacing: '0.08em',
+                padding: '3px 8px', border: '1px solid var(--border)',
+              }}>
+                {t}
+              </span>
+            ))}
           </div>
 
-          <Quiz
-            questions={content.quiz}
-            onComplete={score => id && markCompleted(id, score)}
-          />
-        </motion.section>
+          <h1 style={{
+            fontFamily: 'var(--font-display)', fontStyle: 'italic',
+            fontSize: 'clamp(28px, 5vw, 48px)',
+            color: 'var(--text-primary)', margin: '0 0 16px',
+            lineHeight: 1.2, letterSpacing: '-0.02em',
+          }}>
+            {lessonMeta.title}
+          </h1>
+          <p style={{
+            fontSize: 15, color: 'var(--text-secondary)',
+            lineHeight: 1.7, margin: 0, fontWeight: 300,
+          }}>
+            {lessonMeta.description}
+          </p>
+        </motion.div>
+
+        {/* Content sections */}
+        <div style={{ paddingTop: 48 }}>
+          {content.sections.map((section, idx) => (
+            <motion.section
+              key={section.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-80px' }}
+              transition={{ duration: 0.45 }}
+              style={{
+                marginBottom: 64,
+                paddingBottom: 64,
+                borderBottom: '1px solid var(--border)',
+              }}
+            >
+              {/* Section header */}
+              <div style={{
+                display: 'flex', alignItems: 'baseline', gap: 20,
+                marginBottom: 32,
+              }}>
+                <span style={{
+                  fontFamily: 'var(--font-mono)', fontSize: 11,
+                  color: 'var(--text-muted)', letterSpacing: '0.1em',
+                  flexShrink: 0,
+                }}>
+                  {String(idx + 1).padStart(2, '0')}
+                </span>
+                <h2 style={{
+                  fontFamily: 'var(--font-display)', fontStyle: 'italic',
+                  fontSize: 'clamp(18px, 3vw, 26px)',
+                  color: 'var(--text-primary)', margin: 0,
+                  lineHeight: 1.3, letterSpacing: '-0.01em',
+                }}>
+                  {section.title}
+                </h2>
+              </div>
+
+              {section.type === 'text' && (
+                <div className="lesson-text-content" style={{
+                  fontSize: 15, color: 'var(--text-secondary)',
+                  lineHeight: 1.75, fontWeight: 300,
+                }}>
+                  {section.content}
+                </div>
+              )}
+              {section.type === 'timeline' && section.items && <Timeline items={section.items} />}
+              {section.type === 'cards' && section.items && <ConceptCards items={section.items} />}
+            </motion.section>
+          ))}
+
+          {/* Quiz section */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div style={{
+              display: 'flex', alignItems: 'baseline', gap: 20,
+              marginBottom: 40,
+            }}>
+              <span style={{
+                fontFamily: 'var(--font-mono)', fontSize: 11,
+                color: 'var(--text-muted)', letterSpacing: '0.1em',
+              }}>
+                Test
+              </span>
+              <h2 style={{
+                fontFamily: 'var(--font-display)', fontStyle: 'italic',
+                fontSize: 'clamp(18px, 3vw, 26px)',
+                color: 'var(--text-primary)', margin: 0,
+                lineHeight: 1.3, letterSpacing: '-0.01em',
+              }}>
+                Verifică-ți cunoștințele
+              </h2>
+            </div>
+
+            <Quiz
+              questions={content.quiz}
+              onComplete={pct => id && markCompleted(id, pct)}
+            />
+          </motion.section>
+        </div>
       </div>
-    </div>
+
+      {/* Lesson text content styles */}
+      <style>{`
+        .lesson-text-content strong {
+          color: var(--text-primary);
+          font-weight: 500;
+        }
+        .lesson-text-content ul, .lesson-text-content ol {
+          padding-left: 24px;
+        }
+        .lesson-text-content li {
+          margin-bottom: 8px;
+        }
+        .lesson-text-content p {
+          margin-bottom: 16px;
+        }
+        .lesson-text-content em {
+          color: var(--text-primary);
+          font-style: italic;
+        }
+      `}</style>
+    </>
   );
 }

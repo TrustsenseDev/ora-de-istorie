@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { CheckCircle2, XCircle, Trophy, ArrowRight, RotateCcw } from 'lucide-react';
 
 interface QuizProps {
   questions: {
@@ -14,161 +13,308 @@ interface QuizProps {
 
 export default function Quiz({ questions, onComplete }: QuizProps) {
   const [currentQ, setCurrentQ] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [isAnswered, setIsAnswered] = useState(false);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [answered, setAnswered] = useState(false);
   const [score, setScore] = useState(0);
-  const [showResults, setShowResults] = useState(false);
+  const [finished, setFinished] = useState(false);
 
-  const handleSelect = (index: number) => {
-    if (isAnswered) return;
-    setSelectedOption(index);
-    setIsAnswered(true);
-    if (index === questions[currentQ].correctAnswer) {
-      setScore(s => s + 1);
-    }
+  const handleSelect = (idx: number) => {
+    if (answered) return;
+    setSelected(idx);
+    setAnswered(true);
+    if (idx === questions[currentQ].correctAnswer) setScore(s => s + 1);
   };
 
   const handleNext = () => {
     if (currentQ < questions.length - 1) {
       setCurrentQ(c => c + 1);
-      setSelectedOption(null);
-      setIsAnswered(false);
+      setSelected(null);
+      setAnswered(false);
     } else {
-      const percentage = Math.round((score / questions.length) * 100);
-      setShowResults(true);
-      onComplete?.(percentage);
+      const pct = Math.round((score / questions.length) * 100);
+      setFinished(true);
+      onComplete?.(pct);
     }
   };
 
-  const resetQuiz = () => {
+  const reset = () => {
     setCurrentQ(0);
-    setSelectedOption(null);
-    setIsAnswered(false);
+    setSelected(null);
+    setAnswered(false);
     setScore(0);
-    setShowResults(false);
+    setFinished(false);
   };
 
-  if (showResults) {
-    const percentage = Math.round((score / questions.length) * 100);
-    const isGood = percentage >= 60;
-
+  if (finished) {
+    const pct = Math.round((score / questions.length) * 100);
+    const good = pct >= 60;
     return (
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-slate-900 border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 text-center max-w-2xl mx-auto"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        style={{
+          border: '1px solid var(--border)',
+          padding: '48px 40px',
+          textAlign: 'center',
+          background: 'var(--bg-card)',
+        }}
       >
-        <div className={`w-16 h-16 sm:w-20 sm:h-20 mx-auto rounded-full flex items-center justify-center mb-4 sm:mb-6 ${
-          isGood ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
-        }`}>
-          <Trophy className="w-8 h-8 sm:w-10 sm:h-10" />
+        {/* Score display */}
+        <div style={{ marginBottom: 32 }}>
+          <div style={{
+            fontFamily: 'var(--font-mono)', fontSize: 11,
+            letterSpacing: '0.14em', textTransform: 'uppercase',
+            color: 'var(--text-muted)', marginBottom: 20,
+          }}>
+            Rezultat final
+          </div>
+          <div style={{
+            fontFamily: 'var(--font-display)', fontStyle: 'italic',
+            fontSize: 'clamp(60px, 12vw, 100px)',
+            color: good ? '#4ade80' : 'var(--accent)',
+            lineHeight: 1,
+            letterSpacing: '-0.03em',
+          }}>
+            {pct}<span style={{ fontSize: '0.4em', color: 'var(--text-muted)' }}>%</span>
+          </div>
+          <p style={{
+            fontSize: 14, color: 'var(--text-secondary)',
+            marginTop: 16, fontWeight: 300,
+          }}>
+            {score} din {questions.length} răspunsuri corecte
+          </p>
         </div>
-        <h3 className="text-2xl sm:text-3xl font-display font-bold text-white mb-2">Test Finalizat!</h3>
-        <p className="text-slate-400 mb-2 text-sm sm:text-base">Ai răspuns corect la {score} din {questions.length} întrebări.</p>
-        <p className={`text-xl sm:text-2xl font-bold mb-6 sm:mb-8 ${isGood ? 'text-emerald-400' : 'text-amber-400'}`}>{percentage}%</p>
 
-        <div className="w-full bg-slate-800 rounded-full h-3 sm:h-4 mb-6 sm:mb-8 overflow-hidden">
+        {/* Progress bar */}
+        <div style={{
+          height: 2, background: 'var(--bg-muted)',
+          marginBottom: 32, position: 'relative', overflow: 'hidden',
+        }}>
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: `${percentage}%` }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-            className={`h-full rounded-full ${isGood ? 'bg-emerald-500' : 'bg-amber-500'}`}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
+            style={{
+              position: 'absolute', left: 0, top: 0, bottom: 0,
+              background: good ? '#4ade80' : 'var(--accent)',
+            }}
           />
         </div>
 
-        {isGood ? (
-          <p className="text-emerald-400 text-sm font-medium mb-5 sm:mb-6">✨ Bravo! Lecția e marcată ca finalizată.</p>
-        ) : (
-          <p className="text-amber-400 text-sm font-medium mb-5 sm:mb-6">📚 Mai recitește lecția și încearcă din nou!</p>
-        )}
+        <p style={{
+          fontSize: 13, color: good ? '#4ade80' : 'var(--accent)',
+          fontFamily: 'var(--font-mono)', letterSpacing: '0.06em',
+          marginBottom: 32,
+        }}>
+          {good ? '→ Lecția marcată ca finalizată' : '→ Mai recitește lecția și încearcă din nou'}
+        </p>
 
         <button
-          onClick={resetQuiz}
-          className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl font-medium transition-colors border border-white/10 text-sm sm:text-base"
+          onClick={reset}
+          style={{
+            padding: '12px 28px',
+            background: 'transparent',
+            border: '1px solid var(--border-strong)',
+            color: 'var(--text-secondary)',
+            cursor: 'pointer',
+            fontFamily: 'var(--font-mono)', fontSize: 12,
+            letterSpacing: '0.1em', textTransform: 'uppercase',
+            transition: 'all 0.15s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.borderColor = 'var(--border-strong)';
+            e.currentTarget.style.color = 'var(--text-primary)';
+            e.currentTarget.style.background = 'var(--bg-muted)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'transparent';
+            e.currentTarget.style.color = 'var(--text-secondary)';
+          }}
         >
-          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
-          Reîncepe Testul
+          Reîncepe testul
         </button>
       </motion.div>
     );
   }
 
   const q = questions[currentQ];
+  const progressPct = (currentQ / questions.length) * 100;
 
   return (
-    <div className="max-w-3xl mx-auto bg-slate-900/50 border border-white/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-10">
-      <div className="flex items-center justify-between mb-5 sm:mb-8">
-        <span className="text-amber-400 font-medium text-xs sm:text-sm uppercase tracking-wider">
-          Întrebarea {currentQ + 1} din {questions.length}
+    <div>
+      {/* Header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: 24,
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-mono)', fontSize: 11,
+          color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase',
+        }}>
+          Întrebarea {currentQ + 1} / {questions.length}
         </span>
-        <span className="text-slate-500 text-xs sm:text-sm font-medium">Scor: {score}</span>
+        <span style={{
+          fontFamily: 'var(--font-mono)', fontSize: 11,
+          color: 'var(--text-muted)',
+        }}>
+          Scor curent: <span style={{ color: 'var(--text-primary)' }}>{score}</span>
+        </span>
       </div>
 
-      <div className="w-full bg-slate-800 rounded-full h-1 sm:h-1.5 mb-5 sm:mb-8 overflow-hidden">
+      {/* Progress line */}
+      <div style={{ height: 1, background: 'var(--bg-muted)', marginBottom: 32, position: 'relative' }}>
         <motion.div
-          className="h-full bg-amber-500 rounded-full"
-          animate={{ width: `${(currentQ / questions.length) * 100}%` }}
+          animate={{ width: `${progressPct}%` }}
           transition={{ duration: 0.4 }}
+          style={{
+            position: 'absolute', left: 0, top: 0, bottom: 0,
+            background: 'var(--accent)',
+          }}
         />
       </div>
 
-      <h3 className="text-lg sm:text-2xl font-medium text-white mb-5 sm:mb-8 leading-snug">
-        {q.question}
-      </h3>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentQ}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Question */}
+          <h3 style={{
+            fontFamily: 'var(--font-display)', fontStyle: 'italic',
+            fontSize: 'clamp(18px, 3vw, 24px)',
+            color: 'var(--text-primary)',
+            margin: '0 0 32px', lineHeight: 1.4,
+            letterSpacing: '-0.01em',
+          }}>
+            {q.question}
+          </h3>
 
-      <div className="space-y-2 sm:space-y-3 mb-5 sm:mb-8">
-        {q.options.map((opt, idx) => {
-          let stateClass = 'bg-white/5 border-white/10 hover:bg-white/10 text-slate-300';
-          let Icon = null;
+          {/* Options */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 32 }}>
+            {q.options.map((opt, idx) => {
+              const isCorrect = idx === q.correctAnswer;
+              const isSelected = idx === selected;
+              const showResult = answered;
 
-          if (isAnswered) {
-            if (idx === q.correctAnswer) {
-              stateClass = 'bg-emerald-500/20 border-emerald-500/50 text-emerald-300';
-              Icon = CheckCircle2;
-            } else if (idx === selectedOption) {
-              stateClass = 'bg-red-500/20 border-red-500/50 text-red-300';
-              Icon = XCircle;
-            } else {
-              stateClass = 'bg-white/5 border-white/10 text-slate-500 opacity-50';
-            }
-          }
+              let bg = 'var(--bg-card)';
+              let border = 'var(--border)';
+              let color = 'var(--text-secondary)';
+              let labelColor = 'var(--text-muted)';
 
-          return (
-            <button
-              key={idx}
-              onClick={() => handleSelect(idx)}
-              disabled={isAnswered}
-              className={`w-full text-left p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all flex items-center justify-between gap-3 ${stateClass}`}
-            >
-              <span className="font-medium text-sm sm:text-base">{opt}</span>
-              {Icon && <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />}
-            </button>
-          );
-        })}
-      </div>
+              if (showResult) {
+                if (isCorrect) {
+                  bg = 'rgba(34, 197, 94, 0.07)';
+                  border = 'rgba(34, 197, 94, 0.3)';
+                  color = '#4ade80';
+                  labelColor = '#4ade80';
+                } else if (isSelected && !isCorrect) {
+                  bg = 'var(--accent-dim)';
+                  border = 'var(--accent-border)';
+                  color = 'var(--accent)';
+                  labelColor = 'var(--accent)';
+                } else {
+                  bg = 'transparent';
+                  color = 'var(--text-muted)';
+                }
+              }
 
-      <AnimatePresence>
-        {isAnswered && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="p-4 sm:p-5 bg-amber-500/10 border border-amber-500/20 rounded-xl sm:rounded-2xl mb-5 sm:mb-8">
-              <h4 className="text-amber-400 font-bold mb-1.5 sm:mb-2 text-xs sm:text-sm uppercase tracking-wide">Explicație</h4>
-              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">{q.explanation}</p>
-            </div>
+              const labels = ['A', 'B', 'C', 'D'];
 
-            <button
-              onClick={handleNext}
-              className="w-full py-3 sm:py-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl sm:rounded-2xl flex items-center justify-center gap-2 transition-colors text-sm sm:text-base"
-            >
-              {currentQ < questions.length - 1 ? 'Următoarea Întrebare' : 'Vezi Rezultatele'}
-              <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-          </motion.div>
-        )}
+              return (
+                <motion.button
+                  key={idx}
+                  onClick={() => handleSelect(idx)}
+                  disabled={answered}
+                  style={{
+                    display: 'flex', alignItems: 'flex-start', gap: 16,
+                    padding: '16px 20px',
+                    background: bg,
+                    border: `1px solid ${border}`,
+                    cursor: answered ? 'default' : 'pointer',
+                    textAlign: 'left',
+                    transition: 'all 0.12s',
+                    width: '100%',
+                  }}
+                  whileHover={!answered ? { background: 'var(--bg-muted)' } : {}}
+                >
+                  <span style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 11,
+                    color: labelColor, letterSpacing: '0.06em',
+                    flexShrink: 0, marginTop: 2,
+                    transition: 'color 0.12s',
+                  }}>
+                    {labels[idx]}
+                  </span>
+                  <span style={{
+                    fontSize: 14, color, lineHeight: 1.6,
+                    fontWeight: showResult && isCorrect ? 500 : 400,
+                    transition: 'color 0.12s',
+                  }}>
+                    {opt}
+                  </span>
+                  {showResult && isCorrect && (
+                    <span style={{ marginLeft: 'auto', color: '#4ade80', fontSize: 12, flexShrink: 0 }}>✓</span>
+                  )}
+                  {showResult && isSelected && !isCorrect && (
+                    <span style={{ marginLeft: 'auto', color: 'var(--accent)', fontSize: 12, flexShrink: 0 }}>✗</span>
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Explanation + Next */}
+          <AnimatePresence>
+            {answered && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                transition={{ duration: 0.25 }}
+                style={{ overflow: 'hidden' }}
+              >
+                <div style={{
+                  padding: '16px 20px',
+                  background: 'var(--bg-muted)',
+                  borderLeft: '2px solid var(--gold)',
+                  marginBottom: 24,
+                }}>
+                  <div style={{
+                    fontFamily: 'var(--font-mono)', fontSize: 10,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    color: 'var(--gold)', marginBottom: 8,
+                  }}>
+                    Explicație
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.65, margin: 0, fontWeight: 300 }}>
+                    {q.explanation}
+                  </p>
+                </div>
+
+                <button
+                  onClick={handleNext}
+                  style={{
+                    padding: '14px 32px',
+                    background: 'var(--accent)',
+                    border: 'none',
+                    color: 'white',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-mono)', fontSize: 12,
+                    letterSpacing: '0.1em', textTransform: 'uppercase',
+                    transition: 'opacity 0.15s',
+                    width: '100%',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
+                  onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                >
+                  {currentQ < questions.length - 1 ? 'Următoarea →' : 'Finalizează →'}
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </AnimatePresence>
     </div>
   );
