@@ -26,7 +26,7 @@ export default function LessonProgressBar({ lessonTitle, isCompleted }: Props) {
         <motion.div
           initial={{ opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-slate-950/95 backdrop-blur-md border-b border-white/5 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-3"
+          className="bg-slate-950 border-b border-white/5 px-3 sm:px-4 py-1.5 sm:py-2 flex items-center justify-between gap-3"
         >
           <span className="text-xs sm:text-sm text-slate-400 truncate">{lessonTitle}</span>
           <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">

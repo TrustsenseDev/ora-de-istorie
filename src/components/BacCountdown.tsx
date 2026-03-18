@@ -33,7 +33,7 @@ export default function BacCountdown() {
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       className={`w-full border-b px-3 py-2 ${
-        urgency ? 'bg-red-500/10 border-red-500/20' : 'bg-amber-500/5 border-amber-500/15'
+        urgency ? 'bg-red-950 border-red-500/20' : 'bg-slate-900 border-amber-500/15'
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-center gap-3 flex-wrap">

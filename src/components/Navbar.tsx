@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <div className="sticky top-0 z-50 w-full">
       <BacCountdown />
-      <nav className="w-full border-b border-white/10 bg-slate-950/90 backdrop-blur-md">
+      <nav className="w-full border-b border-white/10 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -61,7 +61,7 @@ export default function Navbar() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="sm:hidden overflow-hidden border-t border-white/10 bg-slate-950/95"
+              className="sm:hidden overflow-hidden border-t border-white/10 bg-slate-950"
             >
               <div className="px-4 py-3 space-y-2">
                 <Link
