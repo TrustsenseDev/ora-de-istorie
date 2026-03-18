@@ -1,305 +1,496 @@
-import { LessonData } from '../lessonContent';
+import { LessonData } from '../types';
 
 export const autonomiiLocaleSiInstitutiiCentrale: LessonData = {
-    id: 'autonomii-locale-si-institutii-centrale',
-    sections: [
-      {
-        id: 'autonomii-locale',
-        type: 'text',
-        title: '01. Autonomii Locale',
-        content: (
-          <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-            <p><strong>Autonomiile locale</strong> reprezintă forme de organizare teritorial-politică, specifice Evului Mediu, prin care o comunitate se guvernează singură, având propriile legi și instituții, dar recunoscând adesea suzeranitatea unui stat mai puternic.</p>
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Cauzele apariției autonomiilor locale:</h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Creșterea demografică:</strong> sporirea populației a dus la necesitatea unei organizări mai complexe.</li>
-              <li><strong>Dezvoltarea economică:</strong> apariția unor noi îndeletniciri, dezvoltarea comerțului și a meșteșugurilor.</li>
-              <li><strong>Pericolul extern:</strong> necesitatea apărării în fața invaziilor migratorilor (maghiari, pecenegi, cumani, tătari).</li>
-            </ul>
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Tipuri de autonomii locale:</h3>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Obștea sătească:</strong> cea mai veche formă de organizare, bazată pe proprietatea comună asupra pământului (păduri, pășuni, ape) și proprietatea privată asupra casei și lotului de pământ cultivat. Era condusă de un <strong>jude</strong> (sau cneaz) și un sfat al oamenilor buni și bătrâni.</li>
-              <li><strong>Cnezatele:</strong> uniuni de obști sătești, conduse de un cneaz, cu atribuții militare, judecătorești și administrative.</li>
-              <li><strong>Voievodatele:</strong> uniuni de cnezate, conduse de un voievod, având o organizare superioară, cu caracter militar mai pronunțat.</li>
-              <li><strong>Țările (Terrae):</strong> regiuni mai întinse, cu o identitate geografică și istorică distinctă (ex: Țara Făgărașului, Țara Maramureșului, Țara Hațegului).</li>
-              <li><strong>Codrii și câmpurile:</strong> forme de organizare specifice anumitor zone geografice (ex: Codrii Cosminului, Câmpul lui Dragoș).</li>
-            </ul>
-          </div>
-        ),
-      },
-      {
-        id: 'constituirea-statelor',
-        type: 'text',
-        title: '02. Constituirea Statelor Medievale Românești',
-        content: (
-          <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Întemeierea Transilvaniei</h3>
-            <p>S-a realizat treptat, prin cucerirea și organizarea teritoriului de către regatul maghiar (secolele XI-XIII). Etapele cuceririi:</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Secolul XI:</strong> maghiarii pătrund în nord-vestul și centrul Transilvaniei, învingându-i pe conducătorii locali (Gelu, Glad, Menumorut - atestați de <em>Gesta Hungarorum</em>).</li>
-              <li><strong>Secolul XII:</strong> cucerirea se extinde spre est și sud. Pentru a consolida stăpânirea și a apăra granițele, regii maghiari colonizează <strong>sași</strong> (populație de origine germană, meșteșugari și negustori) și <strong>secui</strong> (populație de origine turcică, cu rol militar).</li>
-              <li><strong>Secolul XIII:</strong> cucerirea este finalizată. Sunt aduși <strong>Cavalerii Teutoni</strong> în Țara Bârsei (1211-1225) pentru a apăra granița de est și a răspândi catolicismul, dar sunt expulzați deoarece au încercat să-și creeze un stat independent.</li>
-            </ul>
-            <p><strong>Organizarea:</strong> Transilvania a fost organizată ca <strong>voievodat</strong>, vasal coroanei maghiare. Primul voievod atestat documentar este <strong>Leustachius</strong> (1176). Românii, treptat, sunt excluși din viața politică, mai ales după 1366 (diplomele regelui Ludovic I de Anjou condiționau calitatea de nobil de apartenența la catolicism).</p>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Întemeierea Țării Românești</h3>
-            <p>S-a realizat prin unificarea formațiunilor politice prestatale de la sud de Carpați (Cnezatele lui Ioan și Farcaș, Voievodatele lui Litovoi și Seneslau - atestate de <em>Diploma Cavalerilor Ioaniți</em> din 1247).</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Tradiția istorică:</strong> vorbește despre "descălecatul" lui Radu Negru din Făgăraș la Câmpulung (1290).</li>
-              <li><strong>Etapele formării:</strong>
-                <ul className="list-disc list-inside ml-6 mt-2">
-                  <li><strong>Basarab I (c. 1310-1352):</strong> unifică formațiunile, devine vasal regelui maghiar Carol Robert de Anjou. În urma conflictului cu acesta, Basarab obține independența Țării Românești prin victoria de la <strong>Posada (1330)</strong>.</li>
-                  <li><strong>Nicolae Alexandru (1352-1364):</strong> consolidează statul, înființează Mitropolia Țării Românești la Curtea de Argeș (1359), recunoscută de Patriarhia de la Constantinopol.</li>
-                  <li><strong>Vladislav Vlaicu (1364-1377):</strong> bate primele monede, respinge primele atacuri otomane, înființează a doua mitropolie (la Severin).</li>
-                </ul>
-              </li>
-            </ul>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Constituirea Moldovei</h3>
-            <p>S-a realizat la est de Carpați, în contextul luptei împotriva tătarilor.</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Etapa I (Marca de apărare):</strong> Regele maghiar înființează o marcă de apărare împotriva tătarilor, condusă de <strong>Dragoș</strong>, voievod din Maramureș (c. 1352-1353). Aceasta era dependentă de Ungaria.</li>
-              <li><strong>Etapa II (Independența):</strong> <strong>Bogdan</strong>, un alt voievod din Maramureș, aflat în conflict cu regele maghiar, trece munții în Moldova (1359), îi înlătură pe urmașii lui Dragoș și obține independența noului stat, respingând atacurile maghiare (1364-1365).</li>
-              <li><strong>Consolidarea:</strong>
-                <ul className="list-disc list-inside ml-6 mt-2">
-                  <li><strong>Lațcu (1365-1373):</strong> acceptă catolicismul și înființează o episcopie catolică la Siret pentru a obține protecție papală împotriva Ungariei și Poloniei.</li>
-                  <li><strong>Petru Mușat (1375-1391):</strong> bate primele monede, depune jurământ de vasalitate regelui Poloniei (pentru a contracara pretențiile Ungariei), înființează Mitropolia Moldovei la Suceava (recunoscută mai târziu).</li>
-                  <li><strong>Roman I (1391-1394):</strong> desăvârșește unificarea teritorială, numindu-se "domn de la munte până la mare".</li>
-                </ul>
-              </li>
-            </ul>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Constituirea Dobrogei</h3>
-            <p>S-a format prin unificarea formațiunilor locale dintre Dunăre și Marea Neagră. Nucleul a fost "Țara Cărvunei".</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Balica (c. 1346-1354):</strong> intervine în luptele pentru tronul Imperiului Bizantin.</li>
-              <li><strong>Dobrotici (1354-1386):</strong> obține titlul de despot, unifică teritoriul, statul devenind independent.</li>
-              <li><strong>Ivanco (1386-1388):</strong> bate monedă proprie, se confruntă cu atacurile otomane. În 1388, Dobrogea este alipită Țării Românești de către Mircea cel Bătrân, pentru a o proteja de otomani.</li>
-            </ul>
-          </div>
-        ),
-      },
-      {
-        id: 'institutii-centrale',
-        type: 'text',
-        title: '03. Instituții Centrale',
-        content: (
-          <div className="space-y-4 text-slate-300 leading-relaxed text-lg">
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Domnia</h3>
-            <p>Instituția centrală supremă în Țara Românească și Moldova. Titlul oficial era de "mare voievod și domn".</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Voievod:</strong> comandantul suprem al armatei (lider militar).</li>
-              <li><strong>Domn (Dominus):</strong> stăpânul absolut al țării (lider politic și administrativ).</li>
-              <li><strong>Originea puterii:</strong> de drept divin ("din mila lui Dumnezeu").</li>
-              <li><strong>Succesiunea:</strong> sistemul ereditar-electiv (putea fi ales orice membru al familiei domnitoare - os domnesc - de către boieri). Acest sistem a generat numeroase lupte pentru tron.</li>
-              <li><strong>Atribuții:</strong>
-                <ul className="list-disc list-inside ml-6 mt-2">
-                  <li><em>Politice:</em> conducea politica internă și externă, încheia tratate, declara război și pace.</li>
-                  <li><em>Administrative:</em> numea și revoca dregătorii.</li>
-                  <li><em>Legislative:</em> emitea acte cu putere de lege (hrisoave).</li>
-                  <li><em>Judecătorești:</em> instanța supremă de judecată (putea pronunța pedeapsa cu moartea).</li>
-                  <li><em>Economice:</em> bătea monedă, stabilea impozitele, era proprietarul întregului pământ al țării (dominium eminens).</li>
-                </ul>
-              </li>
-            </ul>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Sfatul Domnesc</h3>
-            <p>Organism consultativ, format din cei mai importanți boieri (marii dregători). Asista domnul în luarea deciziilor importante (război, pace, tratate, judecăți). În timp, influența sa a crescut, uneori limitând puterea domnului.</p>
-            <p>Principalele dregătorii:</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Banul Olteniei:</strong> cel mai important dregător în Țara Românească, locțiitorul domnului în Oltenia.</li>
-              <li><strong>Portarul Sucevei:</strong> dregător important în Moldova, cu atribuții militare.</li>
-              <li><strong>Vornicul:</strong> șeful curții domnești, cu atribuții judecătorești.</li>
-              <li><strong>Logofătul:</strong> șeful cancelariei domnești (redacta actele).</li>
-              <li><strong>Vistiernicul:</strong> responsabil cu finanțele țării.</li>
-              <li><strong>Spătarul:</strong> comandantul armatei (când domnul nu era prezent).</li>
-              <li><strong>Paharnicul, Stolnicul, Postelnicul:</strong> dregătorii de curte.</li>
-            </ul>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Adunarea Țării (Stările Generale)</h3>
-            <p>Instituție reprezentativă, convocată ocazional de domn pentru probleme excepționale (alegerea domnului, schimbarea religiei, tratate importante). Era formată din reprezentanții stărilor privilegiate: boierimea, clerul înalt și, uneori, orășenii și țăranii liberi. În Transilvania se numea <strong>Congregația Generală</strong> (ulterior Dieta), din care românii au fost excluși după 1437 (Unio Trium Nationum).</p>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Biserica</h3>
-            <p>Instituție fundamentală, strâns legată de domnie. Domnul era protectorul bisericii, iar biserica legitima puterea domnului (prin ungerea cu mir). Mitropolitul era al doilea om în stat, membru de drept al Sfatului domnesc și locțiitor al domnului în caz de vacanță a tronului.</p>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Armata</h3>
-            <p>Era formată din:</p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Oastea cea mică:</strong> armata permanentă, formată din garda domnului, cetele boierilor și curteni. Intervenea rapid în caz de atac.</li>
-              <li><strong>Oastea cea mare:</strong> convocată doar în caz de pericol major, formată din toți bărbații capabili să poarte arme (inclusiv țărani).</li>
-            </ul>
-            
-            <h3 className="text-xl font-bold text-white mt-6 mb-2">Administrația și Justiția</h3>
-            <p>Țara Românească era împărțită în <strong>județe</strong> (conduse de județi), iar Moldova în <strong>ținuturi</strong> (conduse de pârcălabi). Justiția se baza pe <strong>obiceiul pământului</strong> (dreptul cutumiar - <em>Jus Valachicum</em>) și, ulterior, pe legi scrise (pravile).</p>
-          </div>
-        ),
-      },
-    ],
-    quiz: [
-      {
-        question: "Care a fost principala cauză a apariției autonomiilor locale în spațiul românesc?",
-        options: [
-          "Dorința de a crea imperii",
-          "Necesitatea apărării în fața invaziilor migratorilor, creșterea demografică și dezvoltarea economică",
-          "Influența culturii occidentale",
-          "Adoptarea catolicismului"
-        ],
-        correctAnswer: 1,
-        explanation: "Autonomiile locale au apărut din nevoi practice: apărarea împotriva migratorilor, gestionarea unei populații în creștere și organizarea noilor activități economice."
-      },
-      {
-        question: "Ce instituție reprezenta cea mai veche formă de organizare a românilor?",
-        options: [
-          "Voievodatul",
-          "Sfatul Domnesc",
-          "Obștea sătească",
-          "Dieta"
-        ],
-        correctAnswer: 2,
-        explanation: "Obștea sătească a fost forma de bază și cea mai veche de organizare, bazată pe proprietatea comună a pământului (păduri, ape) și condusă de un jude."
-      },
-      {
-        question: "Cine a fost primul voievod atestat documentar în Transilvania (1176)?",
-        options: [
-          "Gelu",
-          "Leustachius",
-          "Glad",
-          "Menumorut"
-        ],
-        correctAnswer: 1,
-        explanation: "Leustachius este primul voievod al Transilvaniei atestat documentar în anul 1176, Transilvania fiind organizată ca voievodat vasal coroanei maghiare."
-      },
-      {
-        question: "Ce populații au fost colonizate de regii maghiari în Transilvania pentru a apăra granițele?",
-        options: [
-          "Cumani și pecenegi",
-          "Sași și secui",
-          "Slavi și bulgari",
-          "Tătari și avari"
-        ],
-        correctAnswer: 1,
-        explanation: "Regii maghiari au colonizat sași (meșteșugari și negustori germani) și secui (populație turcică cu rol militar) pentru a consolida stăpânirea și a apăra granițele."
-      },
-      {
-        question: "Prin ce bătălie a obținut Basarab I independența Țării Românești?",
-        options: [
-          "Bătălia de la Rovine (1395)",
-          "Bătălia de la Podul Înalt (1475)",
-          "Bătălia de la Posada (1330)",
-          "Bătălia de la Călugăreni (1595)"
-        ],
-        correctAnswer: 2,
-        explanation: "Basarab I a obținut independența Țării Românești învingându-l pe regele maghiar Carol Robert de Anjou în bătălia de la Posada (1330)."
-      },
-      {
-        question: "Cum s-a realizat constituirea Moldovei în a doua etapă (obținerea independenței)?",
-        options: [
-          "Prin descălecatul lui Radu Negru",
-          "Prin trecerea munților de către Bogdan din Maramureș și înlăturarea urmașilor lui Dragoș (1359)",
-          "Prin unificarea cu Țara Românească",
-          "Prin cucerirea de către Imperiul Otoman"
-        ],
-        correctAnswer: 1,
-        explanation: "Bogdan, voievod din Maramureș, a trecut în Moldova, i-a înlăturat pe urmașii lui Dragoș (reprezentanții suzeranității maghiare) și a obținut independența statului."
-      },
-      {
-        question: "Cine a unificat teritoriul Dobrogei, obținând titlul de despot?",
-        options: [
-          "Balica",
-          "Ivanco",
-          "Mircea cel Bătrân",
-          "Dobrotici"
-        ],
-        correctAnswer: 3,
-        explanation: "Dobrotici (1354-1386) a unificat formațiunile din Dobrogea, a obținut titlul de despot, iar statul a devenit independent."
-      },
-      {
-        question: "Care era titlul oficial al conducătorului în Țara Românească și Moldova?",
-        options: [
-          "Rege și Împărat",
-          "Mare voievod și domn",
-          "Principe și Duce",
-          "Cneaz și Jude"
-        ],
-        correctAnswer: 1,
-        explanation: "Titlul oficial era 'mare voievod' (comandant suprem al armatei) și 'domn' (stăpân absolut al țării, din latinescul dominus)."
-      },
-      {
-        question: "Ce sistem de succesiune la tron exista în Țara Românească și Moldova?",
-        options: [
-          "Ereditar absolut (primul născut)",
-          "Electiv pur (ales de popor)",
-          "Ereditar-electiv (ales de boieri din rândul familiei domnitoare)",
-          "Numit direct de Patriarh"
-        ],
-        correctAnswer: 2,
-        explanation: "Sistemul ereditar-electiv permitea oricărui membru al familiei domnitoare ('os domnesc') să fie ales de către boieri, ceea ce a generat multe lupte pentru tron."
-      },
-      {
-        question: "Care era rolul Sfatului Domnesc?",
-        options: [
-          "Să aleagă țăranii liberi",
-          "Să conducă armata în mod exclusiv",
-          "Organism consultativ format din marii boieri, care asista domnul în decizii",
-          "Să redacteze legile fără acordul domnului"
-        ],
-        correctAnswer: 2,
-        explanation: "Sfatul Domnesc era format din marii dregători și avea rol consultativ, asistând domnul în luarea deciziilor importante (război, pace, judecăți)."
-      },
-      {
-        question: "Ce dregător era șeful cancelariei domnești și redacta actele?",
-        options: [
-          "Vornicul",
-          "Logofătul",
-          "Vistiernicul",
-          "Spătarul"
-        ],
-        correctAnswer: 1,
-        explanation: "Logofătul era șeful cancelariei domnești, responsabil cu redactarea actelelor oficiale (hrisoavelor) emise de domn."
-      },
-      {
-        question: "Ce era Adunarea Țării (Stările Generale)?",
-        options: [
-          "O armată permanentă",
-          "O instanță de judecată pentru țărani",
-          "Instituție reprezentativă convocată ocazional pentru probleme excepționale",
-          "Sfatul zilnic al domnului"
-        ],
-        correctAnswer: 2,
-        explanation: "Adunarea Țării era convocată doar în situații excepționale (alegerea domnului, tratate) și era formată din boieri, cler și uneori orășeni/țăranii liberi."
-      },
-      {
-        question: "Din ce era formată 'Oastea cea mare'?",
-        options: [
-          "Doar din mercenari străini",
-          "Din garda personală a domnului",
-          "Din toți bărbații capabili să poarte arme, convocată în caz de pericol major",
-          "Doar din marii boieri"
-        ],
-        correctAnswer: 2,
-        explanation: "Oastea cea mare reprezenta mobilizarea generală a tuturor bărbaților apți de luptă (inclusiv țăranii) și era convocată doar în situații de extremă necesitate."
-      },
-      {
-        question: "Cum se numea dreptul cutumiar (obiceiul pământului) pe care se baza justiția?",
-        options: [
-          "Jus Valachicum",
-          "Lex Romana",
-          "Codul lui Iustinian",
-          "Magna Charta"
-        ],
-        correctAnswer: 0,
-        explanation: "Justiția în țările române se baza inițial pe 'obiceiul pământului', un drept cutumiar nescris, cunoscut în documente ca Jus Valachicum."
-      },
-      {
-        question: "Cine a înființat prima Mitropolie a Țării Românești la Curtea de Argeș (1359)?",
-        options: [
-          "Basarab I",
-          "Nicolae Alexandru",
-          "Vladislav Vlaicu",
-          "Mircea cel Bătrân"
-        ],
-        correctAnswer: 1,
-        explanation: "Nicolae Alexandru (1352-1364) a consolidat statul și a înființat Mitropolia Țării Românești la Curtea de Argeș în 1359, recunoscută de Constantinopol."
-      }
-    ]
+  id: 'autonomii-locale-si-institutii-centrale',
+  sections: [
+    // ─── 01. CONTEXT GENERAL ───────────────────────────────────────────
+    {
+      id: 'context-general',
+      type: 'text',
+      title: '01. Context general — Cum s-au format autonomiile locale?',
+      content: (
+        <div className="prose-content">
+          <p>
+            După retragerea romană din Dacia (271 d.Hr.), populația rămasă a trăit în sate, fără structuri statale propriu-zise. În secolele următoare, valurile succesive de migratori (goți, gepizi, avari, slavi — sec. IV–VI) și-au impus autoritatea militară, dar, din cauza numărului lor redus, au fost treptat asimilați de populația locală autohtonă.
+          </p>
+          <p>
+            <strong>La baza întregii organizări politice stau obștile sătești</strong> — comunități de sate cu teritoriu bine delimitat și organizare socială proprie. Sec. VII–IX: la nord de Dunăre există obști sătești izolate. Sec. IX–X: obștile se grupează în <em>uniuni de obști</em>, autonomii locale pe care Nicolae Iorga le-a numit <strong>„romanii populare"</strong>. Acestea purtau denumiri variate: <strong>codri, câmpuri, ocoale, cobâle, țări</strong>.
+          </p>
+          <p>
+            Locuitorii acestor formațiuni sunt consemnați în izvoare bizantine, ruse, maghiare, turce și armene sub denumiri diferite: <strong>vlahi, volohi, valahi, blachi, ulaki</strong> — toți desemnând aceeași populație romanică est-europeană.
+          </p>
+          <p>
+            <strong>Cauzele formării autonomiilor:</strong>
+          </p>
+          <ul>
+            <li>Necesitatea <strong>apărării</strong> în fața invaziilor migratorilor</li>
+            <li><strong>Creșterea demografică</strong> și nevoia de organizare mai complexă</li>
+            <li><strong>Dezvoltarea economică</strong> — apariția meșteșugurilor, comerțului</li>
+            <li>Criteriul geografic — văile râurilor, depresiunile, zonele protejate de munți</li>
+          </ul>
+        </div>
+      ),
+    },
+
+    // ─── 02. TIPURILE DE FORMAȚIUNI ────────────────────────────────────
+    {
+      id: 'tipuri-formatiuni',
+      type: 'cards',
+      title: '02. Tipurile de formațiuni prestatale',
+      items: [
+        {
+          title: 'Obștea sătească',
+          icon: 'users',
+          description: 'Cea mai veche formă de organizare. Comunitate de sate cu proprietate comună (păduri, ape, pășuni) și proprietate privată (casa, lotul de pământ). Condusă de un jude sau cneaz și un sfat al oamenilor buni și bătrâni.',
+        },
+        {
+          title: 'Cnezatul',
+          icon: 'landmark',
+          description: 'Formațiune politică alcătuită din 2+ obști sătești, de obicei pe valea unui râu. Condusă de un cneaz cu atribuții administrative, judecătorești și militare. Ex: cnezatul lui Ioan, cnezatul lui Farcaș (atestate 1247).',
+        },
+        {
+          title: 'Voievodatul',
+          icon: 'crown',
+          description: 'Formațiune politică alcătuită din 2+ cnezate. Condusă de un voievod — atributul special era cel MILITAR (voievod = comandant de oaste). Ex: voievodatele lui Gelu, Menumorut, Glad (sec. IX), Gyla, Ahtum (sec. XI).',
+        },
+        {
+          title: 'Țările (Terrae)',
+          icon: 'map',
+          description: 'Regiuni mai întinse cu identitate geografică distinctă. Ex: Țara Hațegului, Țara Maramureșului, Țara Făgărașului, Țara Vrancei, Codrii Cosminului, Câmpul lui Dragoș. Unele au supraviețuit chiar și după formarea statelor.',
+        },
+      ],
+    },
+
+    // ─── 03. FORMAȚIUNI INTRACARPATIC ───────────────────────────────────
+    {
+      id: 'intracarpatic',
+      type: 'text',
+      title: '03. Formațiunile prestatale intracarpatic (sec. IX–XI)',
+      content: (
+        <div className="prose-content">
+          <h3>Sursa istorică: Gesta Hungarorum (cronica lui Anonymus)</h3>
+          <p>
+            Scrisă de notarul unui rege maghiar în jurul anului 1200, prezintă trei voievodate existente la venirea maghiarilor în Pannonia (sfârșitul sec. IX):
+          </p>
+          <ul>
+            <li>
+              <strong>Voievodatul lui Gelu</strong> — situat în centrul Transilvaniei, cetatea de scaun la <em>Dăbâca</em>. Anonymus îl numește <em>blac</em> (adică român). A luptat cu căpetenia maghiară Tuhutum și a fost înfrânt.
+            </li>
+            <li>
+              <strong>Voievodatul lui Menumorut</strong> — situat în <em>Crișana</em>, cetatea la <em>Biharea</em>. A fost înfrânt de ducele Arpad, dar și-a menținut formațiunea prin diplomație — fiica sa s-a căsătorit cu fiul lui Arpad.
+            </li>
+            <li>
+              <strong>Voievodatul lui Glad</strong> — situat în <em>Banat</em>, cetatea la <em>Cuvin</em>. A luptat cu ungurii și i-a învins inițial; formațiunea sa s-a menținut mai multă vreme.
+            </li>
+          </ul>
+
+          <h3>Sursa istorică: Legenda Sf. Gerard (sec. XI)</h3>
+          <p>
+            Atestă alte două voievodate în Transilvania, intrate în conflict cu regele <strong>Ștefan I al Ungariei</strong> (care creștinase maghiarii în jurul anului 1000):
+          </p>
+          <ul>
+            <li>
+              <strong>Voievodatul lui Gyla</strong> — în Transilvania propriu-zisă, cetatea la <em>Bălgrad (Alba Iulia)</em>. Înfrânt deoarece s-a opus trecerii la catolicism.
+            </li>
+            <li>
+              <strong>Voievodatul lui Ahtum</strong> — în <em>Banat</em>, cetatea la <em>Morisena (Cenad)</em>. Înfrânt deoarece a impus o taxă pe sarea ce tranzita formațiunea sa — un act de suveranitate economică inacceptabil pentru statul maghiar.
+            </li>
+          </ul>
+
+          <p>
+            <strong>Consecință:</strong> Procesul de cucerire a Transilvaniei de către Ungaria se desfășoară în secolele XI–XIII, în paralel cu colonizarea sașilor (meșteșugari și negustori germani, aduși pentru a consolida stăpânirea) și a secuilor (populație cu rol militar, plasată la granițe). În 1211 sunt aduși și <strong>Cavalerii Teutoni</strong> în Țara Bârsei, expulzați în 1225 deoarece au încercat să-și creeze un stat propriu.
+          </p>
+          <p>
+            <strong>Organizația Transilvaniei:</strong> Structurată ca <em>voievodat</em> vasal Ungariei. Primul voievod atestat documentar este <strong>Leustachius (1176)</strong>. Treptat, românii sunt excluși din viața politică — după diplomele regelui Ludovic I (1366), calitatea de nobil era condiționată de apartenența la catolicism.
+          </p>
+        </div>
+      ),
+    },
+
+    // ─── 04. FORMAȚIUNI EXTRACARPATIC ──────────────────────────────────
+    {
+      id: 'extracarpatic',
+      type: 'text',
+      title: '04. Formațiunile prestatale extracarpatic — Diploma Cavalerilor Ioaniți (1247)',
+      content: (
+        <div className="prose-content">
+          <p>
+            Cel mai important izvor pentru autonomiile din sudul și estul Carpaților este <strong>Diploma cavalerilor ioaniți</strong>, emisă de regele Ungariei, Bela IV, în 1247. Prin aceasta, cavalerii ioaniți erau chemați în <em>Țara Severinului</em> pentru a apăra și extinde stăpânirea maghiară la sud de Carpați.
+          </p>
+          <p>Diploma menționează explicit următoarele formațiuni:</p>
+          <ul>
+            <li>
+              <strong>Voievodatul lui Litovoi</strong> — la vest de Olt, nu a recunoscut suzeranitatea maghiară. Litovoi a murit în luptă cu ungurii (1277–1279); fratele său Bărbat a fost luat prizonier și a trebuit să se răscumpere. Formațiunea a fost ulterior integrată în Țara Românească.
+            </li>
+            <li>
+              <strong>Voievodatul lui Seneslau</strong> — la est de Olt, a recunoscut suzeranitatea maghiară.
+            </li>
+            <li>
+              <strong>Cnezatul lui Ioan</strong> și <strong>Cnezatul lui Farcaș</strong> — situate între Jiu și Olt, redate cavalerilor ioaniți.
+            </li>
+            <li>
+              <strong>Banatul de Severin</strong> — zonă de graniță controlată de un ban maghiar.
+            </li>
+          </ul>
+
+          <h3>Formațiuni în spațiul moldovean (sec. IX–XIV)</h3>
+          <p>
+            Zona din estul Carpaților este mai puțin documentată. Principalele surse menționează:
+          </p>
+          <ul>
+            <li><strong>Cronica lui Nestor</strong> (rusă) — menționează „volohi" (valahi) care i-au izgonit pe slavi din teritoriile nord-dunărene</li>
+            <li><strong>Codrii Cosminului, Câmpul lui Dragoș, Țara Sipeniților</strong> — formațiuni localizate în nordul Moldovei, sec. IX–XI</li>
+            <li>Autonomii ca <em>Cobâlele</em> (Neamț, Bacău, Vaslui) și <em>Ocoalele</em> (Câmpulung, Vrancea) — atestate în surse indirecte</li>
+          </ul>
+
+          <h3>Formațiuni în Dobrogea</h3>
+          <p>
+            <strong>Anna Comnena</strong> (Alexiada, sec. XI–XII) menționează formațiuni conduse de <em>Tatos, Seslav și Satza</em> la nordul Dunării. Ele s-au implicat în conflictele dintre Bizanț și pecenegi/cumani.
+          </p>
+        </div>
+      ),
+    },
+
+    // ─── 05. ÎNTEMEIEREA STATELOR ────────────────────────────────────────
+    {
+      id: 'intemeierea-statelor',
+      type: 'timeline',
+      title: '05. Întemeierea statelor medievale românești',
+      items: [
+        {
+          year: 'c. 1290',
+          title: 'Tradiția „descălecatului" — Radu Negru',
+          description: 'Letopisețul Cantacuzinesc consemnează că Negru Vodă din Făgăraș a trecut munții spre sud, a creat orașele Câmpulung și Argeș, iar boierii de peste Olt i s-au închinat. Nu e demonstrabil istoric, dar reflectă contribuția instituțională a Transilvaniei la crearea statului.',
+          icon: 'crown',
+        },
+        {
+          year: '1310–1352',
+          title: 'Basarab I — întemeietorul Țării Românești',
+          description: 'Unifică voievodatul lui Litovoi cu cel al lui Seneslau (~1300). În 1324 recunoaște suzeranitatea maghiară; i se recunosc domnia și stăpânirea asupra Olteniei, Munteniei și Basarabiei. Cucerește independența prin victoria de la Posada (1330) împotriva lui Carol Robert de Anjou.',
+          icon: 'sword',
+        },
+        {
+          year: '1352–1364',
+          title: 'Nicolae Alexandru — consolidarea instituțiilor',
+          description: 'Fiul lui Basarab. Întemeiază Mitropolia Țării Românești la Curtea de Argeș (1359), recunoscută de Patriarhia de la Constantinopol. Organizează Biserica ca instituție centrală.',
+          icon: 'landmark',
+        },
+        {
+          year: '1364–1377',
+          title: 'Vladislav Vlaicu — primele monede și a doua Mitropolie',
+          description: 'Bate primele monede ale Țării Românești. Întemeiază a doua Mitropolie la Severin (1370). Respinge primele atacuri otomane. Consolidează statul prin instituții proprii.',
+          icon: 'scroll',
+        },
+        {
+          year: '1352–1353',
+          title: 'Descălecatul lui Dragoș — marca de apărare',
+          description: 'Regele maghiar întemeiază o marcă de apărare împotriva tătarilor în nord-vestul Moldovei, condusă de Dragoș din Maramureș. Formațiunea era dependentă de Ungaria.',
+          icon: 'flag',
+        },
+        {
+          year: '1359',
+          title: 'Bogdan din Maramureș — independența Moldovei',
+          description: 'Voievod maramureșan în conflict cu regele maghiar, trece munții și îi alungă pe urmașii lui Dragoș. Obține independența Moldovei în urma confruntărilor cu Ludovic de Anjou (1364–1365). Fondatorul statului medieval Moldova.',
+          icon: 'crown',
+        },
+        {
+          year: 'c. 1346–1388',
+          title: 'Dobrogea — de la Balica la Ivanco',
+          description: 'Balica (c. 1346) unifică teritoriile dintre Dunăre și mare, intervenind în luptele bizantine. Dobrotici (1354–1386) obține titlul de despot și creează un stat independent. Ivanco (1386–1388) bate monedă proprie, dar este înfrânt de otomani. În 1388 Mircea cel Bătrân alipește Dobrogea la Țara Românească.',
+          icon: 'map',
+        },
+      ],
+    },
+
+    // ─── 06. DOMNIA ──────────────────────────────────────────────────────
+    {
+      id: 'domnia',
+      type: 'text',
+      title: '06. Instituția Domniei',
+      content: (
+        <div className="prose-content">
+          <p>
+            <strong>Domnia</strong> a fost instituția centrală supremă în Țara Românească și Moldova. Titlul oficial era <em>„mare voievod și domn"</em>:
+          </p>
+          <ul>
+            <li><strong>Voievod</strong> (de origine slavă) = comandant suprem al armatei</li>
+            <li><strong>Domn</strong> (din latinescul <em>dominus</em>) = stăpânul absolut al țării și al supușilor</li>
+          </ul>
+
+          <h3>Legitimitatea puterii</h3>
+          <p>
+            Originea puterii era <em>de drept divin</em> — „din mila lui Dumnezeu". Investitura se realiza prin ungerea cu mir de către mitropolit (analog cu practica în statele creștine medievale).
+          </p>
+
+          <h3>Sistemul ereditar-electiv</h3>
+          <p>
+            Succesiunea la tron nu era strict ereditară. Orice membru al familiei domnitoare din <em>„os domnesc"</em> putea fi ales de boieri. Condiții: să fie de sex masculin și integru fizic. Acest sistem a generat frecvente lupte fratricide pentru tron.
+          </p>
+
+          <h3>Atribuțiile domnului</h3>
+          <ul>
+            <li><strong>Politice:</strong> conducea politica internă și externă, încheia tratate, declara război și pace</li>
+            <li><strong>Administrative:</strong> numea și revoca dregătorii; împărțea țara în județe (TR) sau ținuturi (Moldova)</li>
+            <li><strong>Legislative:</strong> emitea acte cu putere de lege (<em>hrisoave</em>); primele coduri de legi scrise apar în sec. XVI</li>
+            <li><strong>Judecătorești:</strong> instanța supremă de judecată (Înaltul Divan); putea pronunța pedeapsa cu moartea</li>
+            <li><strong>Economice:</strong> bătea monedă, stabilea impozitele, deținea <em>dominium eminens</em> — era teoretic proprietarul întregului pământ</li>
+            <li><strong>Religioase:</strong> protector al Bisericii Ortodoxe, ctitor de lăcașuri de cult</li>
+          </ul>
+
+          <h3>Evoluția instituției domniei (sec. XVI–XVIII)</h3>
+          <ul>
+            <li><strong>Sfârșitul sec. XVI – sec. XVII:</strong> crește influența boierimii → se instituie <em>regimul boieresc (nobiliar)</em></li>
+            <li><strong>Sec. XVIII:</strong> instaurarea <em>regimului fanariot</em> — Moldova (1711, ultimul domn pământean: Dimitrie Cantemir), Țara Românească (1716, ultimul domn pământean: Ștefan Cantacuzino). Domnii greci din cartierul Fanar (Constantinopol) devin simpli funcționari otomani, numiți și maziliți de sultan.</li>
+          </ul>
+        </div>
+      ),
+    },
+
+    // ─── 07. SFATUL DOMNESC ──────────────────────────────────────────────
+    {
+      id: 'sfatul-domnesc',
+      type: 'text',
+      title: '07. Sfatul Domnesc și dregătoriile',
+      content: (
+        <div className="prose-content">
+          <p>
+            <strong>Sfatul Domnesc</strong> era organismul consultativ al domnului, format inițial din marii boieri, ulterior din boierii cu dregătorii. Membrul de drept era și <strong>mitropolitul</strong> — sfătuitorul spiritual al domnului și locțiitorul său în caz de absență.
+          </p>
+          <p>
+            Atribuții: asista domnul la judecăți, participa la încheierea tratatelor, consiliere politică și fiscală.
+          </p>
+
+          <h3>Principalele dregătorii</h3>
+          <p>Dregătoriile erau funcții administrative înalte, distincte în Țara Românească față de Moldova:</p>
+
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, marginTop: 12 }}>
+            <thead>
+              <tr style={{ borderBottom: '2px solid var(--border-strong)' }}>
+                <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Dregătorie</th>
+                <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Atribuții</th>
+                <th style={{ textAlign: 'left', padding: '8px 12px', color: 'var(--text-secondary)', fontWeight: 500 }}>Obs.</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Banul', 'Cel mai important în Țara Românească; locțiitorul domnului în Oltenia', 'Nur TR'],
+                ['Vornicul', 'Șeful curții domnești; atribuții judecătorești și administrative', 'TR și Moldova'],
+                ['Logofătul', 'Șeful cancelariei; redacta actele și hrisoavele', 'TR și Moldova'],
+                ['Vistiernicul', 'Răspundea de finanțele statului și de colectarea impozitelor', 'TR și Moldova'],
+                ['Spătarul', 'Purtător de spadă; comandant militar (când domnul era absent)', 'TR'],
+                ['Hatmanul', 'Comandantul armatei / al oastei', 'Moldova'],
+                ['Portarul Sucevei', 'Atribuții militare și diplomatice (primirea solilor)', 'Moldova'],
+                ['Paharnicul', 'Responsabil cu băuturile la curtea domnească', 'TR și Moldova'],
+                ['Stolnicul', 'Responsabil cu masa și bucătăria domnească', 'TR și Moldova'],
+                ['Postelnicul', 'Responsabil cu camera de dormit a domnului; relații diplomatice', 'TR și Moldova'],
+                ['Comisul', 'Responsabil cu grajdurile și caii', 'TR și Moldova'],
+              ].map(([d, a, o]) => (
+                <tr key={d} style={{ borderBottom: '1px solid var(--border)' }}>
+                  <td style={{ padding: '8px 12px', color: 'var(--text-primary)', fontWeight: 500, fontSize: 13 }}>{d}</td>
+                  <td style={{ padding: '8px 12px', color: 'var(--text-secondary)', fontSize: 12 }}>{a}</td>
+                  <td style={{ padding: '8px 12px', color: 'var(--text-muted)', fontSize: 11 }}>{o}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ),
+    },
+
+    // ─── 08. ADUNAREA ȚĂRII & BISERICA ──────────────────────────────────
+    {
+      id: 'adunarea-tarii-si-biserica',
+      type: 'cards',
+      title: '08. Alte instituții centrale: Adunarea Țării și Biserica',
+      items: [
+        {
+          title: 'Adunarea Țării (Stările Generale)',
+          icon: 'users',
+          description: 'Instituție reprezentativă convocată ocazional de domn pentru probleme excepționale: alegerea unui nou domn, schimbarea religiei, tratate importante, aprobarea unor impozite extraordinare. Formată din boieri, cler înalt și uneori orășeni / reprezentanți ai țăranilor liberi. Nu era un parlament în sens modern — nu se întrunea regulat.',
+        },
+        {
+          title: 'Mitropolia Țării Românești (1359)',
+          icon: 'landmark',
+          description: 'Întemeiată de Nicolae Alexandru la Curtea de Argeș, recunoscută de Patriarhia de la Constantinopol. Mitropolitul: cel de-al doilea om în stat, membru de drept al Sfatului Domnesc, locțiitorul domnului. A doua Mitropolie întemeiată de Vladislav Vlaicu la Severin (1370).',
+        },
+        {
+          title: 'Mitropolia Moldovei',
+          icon: 'landmark',
+          description: 'Întemeiată în timpul lui Petru Mușat (c. 1387), recunoscută de Patriarhia de la Constantinopol în 1401, în timpul lui Alexandru cel Bun. Reședința la Suceava.',
+        },
+        {
+          title: 'Dieta (Congregația) Transilvaniei',
+          icon: 'scroll',
+          description: 'Echivalentul Adunării Țării în Transilvania. Din 1437, după Unio Trium Nationum, românii sunt excluși complet. Cele trei națiuni politice recunoscute erau: nobilimea maghiară, secuii și sașii — niciunul nu reprezenta românii, deși aceștia constituiau majoritatea populației.',
+        },
+      ],
+    },
+
+    // ─── 09. ARMATA ──────────────────────────────────────────────────────
+    {
+      id: 'armata',
+      type: 'text',
+      title: '09. Armata și sistemul de apărare',
+      content: (
+        <div className="prose-content">
+          <h3>Oastea cea mică</h3>
+          <p>
+            Armata permanentă, formată din:
+          </p>
+          <ul>
+            <li>Garda personală a domnului (curtenii)</li>
+            <li>Cetele de oaste ale boierilor (obligați să lupte cu oamenii lor în schimbul pământului primit)</li>
+            <li>Mercenari (secui, sași, în unele perioade)</li>
+          </ul>
+          <p>Intervenea rapid în caz de atac, fără mobilizare generală.</p>
+
+          <h3>Oastea cea mare</h3>
+          <p>
+            Convocat în caz de pericol major. Includea toți bărbații apți de luptă — inclusiv țărani. Reprezenta <em>mobilizarea generală</em> a țării. Exemplu clasic: oastea lui Ștefan cel Mare convocată pentru apărarea Moldovei împotriva otomanilor.
+          </p>
+
+          <h3>Cetățile</h3>
+          <p>
+            Cetățile de interior și de graniță au jucat un rol esențial în apărare. În Țara Românească și Moldova, rețeaua de cetăți garanta rezistența în fața atacurilor. <strong>Important:</strong> instaurarea regimului fanariot a dus la dispariția oștirii proprii, deoarece principatele nu mai aveau politică externă autonomă.
+          </p>
+
+          <h3>Administrarea teritoriului</h3>
+          <ul>
+            <li><strong>Țara Românească</strong> — împărțită în <em>județe</em>, conduse de <em>județi</em> (funcționari numiți de domn)</li>
+            <li><strong>Moldova</strong> — împărțită în <em>ținuturi</em>, conduse de <em>pârcălabi</em></li>
+            <li><strong>Dreptul:</strong> bazat inițial pe <em>obiceiul pământului</em> (Jus Valachicum — drept cutumiar nescris); primele coduri de legi scrise apar în sec. XVI</li>
+          </ul>
+        </div>
+      ),
+    },
+  ],
+
+  // ─── QUIZ ────────────────────────────────────────────────────────────────
+  quiz: [
+    {
+      question: 'Care este cel mai vechi izvor care menționează voievodatele lui Gelu, Menumorut și Glad?',
+      options: ['Diploma cavalerilor ioaniți', 'Gesta Hungarorum (Anonymus)', 'Legenda Sf. Gerard', 'Alexiada Annei Comnena'],
+      correctAnswer: 1,
+      explanation: 'Gesta Hungarorum, scrisă de Anonymus (~1200), prezintă cele trei voievodate intracarpatic la venirea maghiarilor (sfârșitul sec. IX).',
+    },
+    {
+      question: 'Ce formațiuni sunt atestate în Diploma cavalerilor ioaniți (1247)?',
+      options: [
+        'Voievodatele lui Gelu, Menumorut și Glad',
+        'Voievodatele lui Gyla și Ahtum',
+        'Voievodatele lui Litovoi și Seneslau, cnezatele lui Ioan și Farcaș',
+        'Voievodatele lui Dragoș și Bogdan',
+      ],
+      correctAnswer: 2,
+      explanation: 'Diploma din 1247 menționează voievodatele lui Litovoi și Seneslau, cnezatele lui Ioan și Farcaș și Banatul de Severin — formațiunile din sudul Carpaților.',
+    },
+    {
+      question: 'De ce a fost înfrânt voievodatul lui Ahtum de regele Ștefan I al Ungariei?',
+      options: [
+        'A atacat primul Ungaria',
+        'A refuzat trecerea la catolicism',
+        'A impus o taxă pe sarea ce tranzita formațiunea sa',
+        'S-a aliat cu pecenegii',
+      ],
+      correctAnswer: 2,
+      explanation: 'Ahtum a impus o taxă pe sarea ce tranzita Banatul — un act de suveranitate economică inacceptabil. Gyla a fost înfrânt pentru că s-a opus trecerii la catolicism.',
+    },
+    {
+      question: 'Prin ce victorie a cucerit Basarab I independența Țării Românești față de Ungaria?',
+      options: ['Bătălia de la Rovine (1394)', 'Bătălia de la Posada (1330)', 'Bătălia de la Vaslui (1475)', 'Bătălia de la Câmpia Mierlei (1389)'],
+      correctAnswer: 1,
+      explanation: 'Victoria de la Posada (1330) împotriva regelui Carol Robert de Anjou a consacrat independența Țării Românești.',
+    },
+    {
+      question: 'Cine a înfăptuit descălecatul care a dus la independența Moldovei?',
+      options: ['Dragoș din Maramureș', 'Alexandru cel Bun', 'Bogdan din Maramureș', 'Petru Mușat'],
+      correctAnswer: 2,
+      explanation: 'Bogdan din Maramureș a trecut munții în 1359, i-a alungat pe urmașii lui Dragoș și a obținut independența Moldovei față de Ungaria (1364–1365).',
+    },
+    {
+      question: 'Ce înseamnă sistemul ereditar-electiv de succesiune la tron?',
+      options: [
+        'Tronul trecea obligatoriu la fiul cel mai mare',
+        'Orice cetățean putea fi ales domn',
+        'Orice membru din familia domnitoare (os domnesc) putea fi ales de boieri',
+        'Sultanul otoman desemna direct domnul',
+      ],
+      correctAnswer: 2,
+      explanation: 'Sistemul ereditar-electiv permitea ca orice bărbat integru fizic din familia domnitoare să fie ales de boieri. Acest sistem a generat frecvente conflicte pentru tron.',
+    },
+    {
+      question: 'Care dregătorie era cea mai importantă în Țara Românească?',
+      options: ['Logofătul', 'Vistiernicul', 'Spătarul', 'Banul'],
+      correctAnswer: 3,
+      explanation: 'Banul Olteniei era cel mai important dregător în Țara Românească — locțiitorul domnului în Oltenia. În Moldova, rolul similar era al Portarului Sucevei.',
+    },
+    {
+      question: 'Ce atribuție distinctă îndeplinea logofătul?',
+      options: ['Comanda armata', 'Redacta actele cancelariei domnești', 'Colecta impozitele', 'Administra grajdurile'],
+      correctAnswer: 1,
+      explanation: 'Logofătul era șeful cancelariei și redacta toate actele oficiale (hrisoavele) emise de domn.',
+    },
+    {
+      question: 'Care a fost primul voievod atestat documentar al Transilvaniei?',
+      options: ['Gelu', 'Glad', 'Leustachius', 'Menumorut'],
+      correctAnswer: 2,
+      explanation: 'Leustachius este primul voievod al Transilvaniei atestat documentar, în 1176, organizat ca voievodat vasal coroanei maghiare.',
+    },
+    {
+      question: 'Cine a constituit cele 3 „națiuni" politice recunoscute ale Transilvaniei medievale (Unio Trium Nationum, 1437)?',
+      options: [
+        'Românii, ungurii și sașii',
+        'Nobilimea maghiară, secuii și sașii',
+        'Ungurii, românii și secuii',
+        'Catolicii, ortodocșii și protestanții',
+      ],
+      correctAnswer: 1,
+      explanation: 'Unio Trium Nationum (1437) a exclus românii din viața politică. Cele 3 națiuni recunoscute erau nobilimea maghiară, secuii și sașii.',
+    },
+    {
+      question: 'Cine a înfăptuit unificarea politică a Dobrogei, obținând titlul de despot?',
+      options: ['Balica', 'Ivanco', 'Dobrotici', 'Mircea cel Bătrân'],
+      correctAnswer: 2,
+      explanation: 'Dobrotici (1354–1386) a unificat formațiunile dobrogene și a obținut titlul de despot de la Bizanț, creând un stat independent.',
+    },
+    {
+      question: 'Când a fost instaurate regimul fanariot în Moldova?',
+      options: ['1699', '1711', '1716', '1821'],
+      correctAnswer: 1,
+      explanation: 'Regimul fanariot a fost instaurat în Moldova în 1711 (ultimul domn pământean: Dimitrie Cantemir) și în Țara Românească în 1716 (ultimul domn pământean: Ștefan Cantacuzino).',
+    },
+    {
+      question: 'Ce este „oastea cea mare"?',
+      options: [
+        'Armata permanentă formată din curteni și boieri',
+        'Mobilizarea generală a tuturor bărbaților apți, convocată în caz de pericol major',
+        'Armata mercenară angajată de domn',
+        'Cavaleria grea a boierilor',
+      ],
+      correctAnswer: 1,
+      explanation: 'Oastea cea mare reprezenta mobilizarea generală — inclusiv a țăranilor — convocată doar în situații de pericol maxim pentru stat.',
+    },
+    {
+      question: 'Cum era împărțit teritorial Moldova față de Țara Românească?',
+      options: [
+        'Moldova în județe, Țara Românească în ținuturi',
+        'Moldova în ținuturi (conduse de pârcălabi), Țara Românească în județe (conduse de județi)',
+        'Ambele în județe, conduse de vornici',
+        'Moldova în voievodate, Țara Românească în cnezate',
+      ],
+      correctAnswer: 1,
+      explanation: 'Țara Românească era împărțită în județe (conduse de județi), iar Moldova în ținuturi (conduse de pârcălabi).',
+    },
+    {
+      question: 'Ce numim prin „obiceiul pământului" (Jus Valachicum)?',
+      options: [
+        'Primul cod de legi scris al Țării Românești',
+        'Dreptul cutumiar (nescris) pe care se baza inițial justiția medievală românească',
+        'Sistemul de impozitare al Imperiului Otoman',
+        'Tratatul dintre Basarab și Ungaria',
+      ],
+      correctAnswer: 1,
+      explanation: 'Obiceiul pământului (Jus Valachicum) era dreptul cutumiar, nescris, transmis oral, pe care se baza justiția medievală. Primele coduri de legi scrise apar abia în sec. XVI.',
+    },
+  ],
 };
