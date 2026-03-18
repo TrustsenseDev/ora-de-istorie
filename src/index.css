@@ -12,10 +12,10 @@
     --bg-card: #141414;
     --bg-muted: #1a1a1a;
     --border: rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.15);
+    --border-strong: rgba(255, 255, 255, 0.16);
     --text-primary: #ededed;
-    --text-secondary: #b0b0b0;
-    --text-muted: #5e5e5e;
+    --text-secondary: #b8b8b8;
+    --text-muted: #606060;
     --accent: #c0392b;
     --accent-dim: rgba(192, 57, 43, 0.12);
     --accent-border: rgba(192, 57, 43, 0.3);
@@ -49,11 +49,11 @@
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--bg-muted); }
 
-  /* ── Prose content (text sections in lessons) ── */
+  /* ─── Prose (text sections in lessons) ─── */
   .prose-content {
     font-size: 16px;
     color: var(--text-secondary);
-    line-height: 1.8;
+    line-height: 1.82;
     font-weight: 400;
   }
 
@@ -65,16 +65,17 @@
   .prose-content ul,
   .prose-content ol {
     padding-left: 22px;
-    margin-bottom: 16px;
+    margin: 0 0 20px;
   }
 
   .prose-content li {
-    margin-bottom: 10px;
-    line-height: 1.7;
+    margin-bottom: 11px;
+    line-height: 1.75;
+    font-size: 16px;
   }
 
   .prose-content p {
-    margin-bottom: 16px;
+    margin: 0 0 18px;
   }
 
   .prose-content em {
@@ -83,86 +84,65 @@
   }
 
   .prose-content h3 {
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
-    margin: 28px 0 12px;
-    letter-spacing: 0.01em;
+    margin: 32px 0 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border);
   }
 
-  /* ── Date badge — used for year/century labels in prose ── */
-  .date-badge {
-    display: inline-block;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--accent);
-    background: var(--accent-dim);
-    border: 1px solid var(--accent-border);
-    padding: 1px 7px;
-    letter-spacing: 0.06em;
-    margin-right: 6px;
-    vertical-align: middle;
-    position: relative;
-    top: -1px;
-  }
-
-  /* ── Date block — date on its own line above content ── */
+  /* ─── Date block — date on its own line ─── */
   .date-block {
     display: block;
     font-family: var(--font-mono);
     font-size: 12px;
     color: var(--accent);
     letter-spacing: 0.08em;
-    margin-bottom: 4px;
-    margin-top: 20px;
+    margin-bottom: 6px;
+    margin-top: 24px;
   }
 
-  .date-block + * {
-    margin-top: 0 !important;
-  }
-
-  /* ── Concept card body text ── */
-  .card-desc {
-    font-size: 14px;
-    line-height: 1.7;
-    color: var(--text-secondary);
-    font-weight: 400;
-  }
-
-  /* ── Table inside prose ── */
+  /* ─── Table inside prose ─── */
   .prose-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
-    margin-top: 14px;
-    margin-bottom: 20px;
+    margin: 16px 0 24px;
   }
 
   .prose-table th {
     text-align: left;
-    padding: 9px 14px;
+    padding: 10px 14px;
     color: var(--text-muted);
     font-weight: 500;
     font-size: 12px;
     border-bottom: 1px solid var(--border-strong);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .prose-table td {
-    padding: 9px 14px;
+    padding: 11px 14px;
     border-bottom: 1px solid var(--border);
     vertical-align: top;
+    font-size: 15px;
+    line-height: 1.6;
   }
 
   .prose-table td:first-child {
     color: var(--text-primary);
-    font-weight: 500;
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   .prose-table td:not(:first-child) {
     color: var(--text-secondary);
+  }
+
+  .prose-table td:last-child {
+    color: var(--text-muted);
     font-size: 13px;
   }
 }
