@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
+import { ArrowLeft, RotateCcw } from 'lucide-react';
 import { lessonContent } from '../data/lessonContent';
 
 interface Question {
@@ -67,6 +68,7 @@ export default function GlobalQuiz() {
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.14em',
             textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 20,
+            fontWeight: 600,
           }}>
             Simulare finalizată
           </div>
@@ -76,25 +78,29 @@ export default function GlobalQuiz() {
             <div style={{
               fontFamily: 'var(--font-display)', fontStyle: 'italic',
               fontSize: 'clamp(64px, 14vw, 112px)',
-              color: pct >= 80 ? '#4ade80' : pct >= 50 ? 'var(--gold)' : 'var(--accent)',
+              color: pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--gold)' : 'var(--accent)',
               lineHeight: 1, letterSpacing: '-0.03em',
             }}>
               {pct}%
             </div>
             <div>
-              <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: '0 0 8px', fontWeight: 300 }}>
+              <p style={{ fontSize: 15, color: 'var(--text-secondary)', margin: '0 0 12px', fontWeight: 300 }}>
                 {correct} / {questions.length} răspunsuri corecte
               </p>
               <button
                 onClick={startNew}
                 style={{
                   padding: '10px 24px',
-                  background: 'var(--accent)', border: 'none',
+                  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
+                  border: 'none',
                   color: 'white', cursor: 'pointer',
                   fontFamily: 'var(--font-mono)', fontSize: 11,
                   letterSpacing: '0.12em', textTransform: 'uppercase',
+                  borderRadius: 8,
+                  display: 'flex', alignItems: 'center', gap: 8,
                 }}
               >
+                <RotateCcw size={13} />
                 Reîncepe
               </button>
             </div>
@@ -106,11 +112,12 @@ export default function GlobalQuiz() {
           <div style={{
             fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em',
             textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: 24,
+            fontWeight: 600,
           }}>
             Analiza răspunsurilor
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {questions.map((q, i) => {
               const userAns = answers[i];
               const ok = userAns === q.correctAnswer;
@@ -122,8 +129,9 @@ export default function GlobalQuiz() {
                   transition={{ delay: i * 0.03 }}
                   style={{
                     padding: '20px',
-                    background: ok ? 'rgba(34, 197, 94, 0.04)' : 'var(--accent-dim)',
-                    borderLeft: `2px solid ${ok ? 'rgba(74, 222, 128, 0.4)' : 'var(--accent)'}`,
+                    background: ok ? 'var(--green-dim)' : 'var(--accent-dim)',
+                    borderLeft: `2px solid ${ok ? 'var(--green)' : 'var(--accent)'}`,
+                    borderRadius: '0 8px 8px 0',
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10, alignItems: 'flex-start', gap: 12 }}>
@@ -132,7 +140,7 @@ export default function GlobalQuiz() {
                     </p>
                     <span style={{
                       fontFamily: 'var(--font-mono)', fontSize: 11,
-                      color: ok ? '#4ade80' : 'var(--accent)',
+                      color: ok ? 'var(--green)' : 'var(--accent)',
                       flexShrink: 0,
                     }}>
                       {ok ? '✓' : '✗'}
@@ -166,28 +174,42 @@ export default function GlobalQuiz() {
       <div style={{ padding: '32px 0 28px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
           <Link to="/" style={{
-            fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em',
-            textTransform: 'uppercase', color: 'var(--text-muted)', textDecoration: 'none',
-          }}>← Înapoi</Link>
-          <div style={{ display: 'flex', gap: 20 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)' }}>
-              Î. <span style={{ color: 'var(--text-primary)' }}>{currentIndex + 1}</span>/{questions.length}
+            fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none',
+            display: 'flex', alignItems: 'center', gap: 6,
+            transition: 'color 0.15s',
+          }}>
+            <ArrowLeft size={14} />
+            Înapoi
+          </Link>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-muted)' }}>
+              <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{currentIndex + 1}</span>/{questions.length}
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#4ade80' }}>
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--green)',
+              padding: '3px 8px', background: 'var(--green-dim)', borderRadius: 4,
+            }}>
               ✓ {correctCount}
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)' }}>
+            <span style={{
+              fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)',
+              padding: '3px 8px', background: 'var(--accent-dim)', borderRadius: 4,
+            }}>
               ✗ {Object.keys(answers).length - correctCount}
             </span>
           </div>
         </div>
 
         {/* Progress */}
-        <div style={{ height: 1, background: 'var(--bg-muted)', position: 'relative' }}>
+        <div style={{ height: 3, background: 'var(--bg-muted)', position: 'relative', borderRadius: 2, overflow: 'hidden' }}>
           <motion.div
             animate={{ width: `${progressPct}%` }}
             transition={{ duration: 0.3 }}
-            style={{ position: 'absolute', left: 0, top: 0, bottom: 0, background: 'var(--accent)' }}
+            style={{
+              position: 'absolute', left: 0, top: 0, bottom: 0,
+              background: 'linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%)',
+              borderRadius: 2,
+            }}
           />
         </div>
       </div>
@@ -212,7 +234,7 @@ export default function GlobalQuiz() {
           </h2>
 
           {/* Options */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 32 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
             {q.options.map((opt, idx) => {
               const isSelected = answers[currentIndex] === idx;
               const isCorrect = idx === q.correctAnswer;
@@ -223,7 +245,7 @@ export default function GlobalQuiz() {
               let color = 'var(--text-secondary)';
 
               if (showResult) {
-                if (isCorrect) { bg = 'rgba(34, 197, 94, 0.07)'; border = 'rgba(74,222,128,0.3)'; color = '#4ade80'; }
+                if (isCorrect) { bg = 'var(--green-dim)'; border = 'rgba(52,211,153,0.25)'; color = 'var(--green)'; }
                 else if (isSelected) { bg = 'var(--accent-dim)'; border = 'var(--accent-border)'; color = 'var(--accent)'; }
                 else { bg = 'transparent'; color = 'var(--text-muted)'; }
               }
@@ -240,14 +262,15 @@ export default function GlobalQuiz() {
                     padding: '15px 18px',
                     background: bg, border: `1px solid ${border}`,
                     cursor: hasAnswered ? 'default' : 'pointer',
-                    textAlign: 'left', transition: 'all 0.12s', width: '100%',
+                    textAlign: 'left', transition: 'all 0.15s', width: '100%',
+                    borderRadius: 8,
                   }}
                 >
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', flexShrink: 0, marginTop: 2 }}>
                     {labels[idx]}
                   </span>
                   <span style={{ fontSize: 14, color, lineHeight: 1.6 }}>{opt}</span>
-                  {showResult && isCorrect && <span style={{ marginLeft: 'auto', color: '#4ade80', flexShrink: 0 }}>✓</span>}
+                  {showResult && isCorrect && <span style={{ marginLeft: 'auto', color: 'var(--green)', flexShrink: 0 }}>✓</span>}
                   {showResult && isSelected && !isCorrect && <span style={{ marginLeft: 'auto', color: 'var(--accent)', flexShrink: 0 }}>✗</span>}
                 </button>
               );
@@ -260,10 +283,12 @@ export default function GlobalQuiz() {
                 onClick={handleNext}
                 style={{
                   width: '100%', padding: '14px',
-                  background: 'var(--accent)', border: 'none',
+                  background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
+                  border: 'none',
                   color: 'white', cursor: 'pointer',
                   fontFamily: 'var(--font-mono)', fontSize: 12,
                   letterSpacing: '0.1em', textTransform: 'uppercase',
+                  borderRadius: 8,
                 }}
               >
                 {currentIndex === questions.length - 1 ? 'Vezi rezultatele →' : 'Continuă →'}

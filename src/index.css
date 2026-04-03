@@ -8,19 +8,27 @@
 
 @layer base {
   :root {
-    --bg: #0c0c0c;
-    --bg-card: #141414;
-    --bg-muted: #1a1a1a;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.16);
-    --text-primary: #ededed;
-    --text-secondary: #c0c0c0;
-    --text-muted: #666666;
+    --bg: #09090b;
+    --bg-card: #111113;
+    --bg-muted: #18181b;
+    --bg-elevated: #1c1c20;
+    --border: rgba(255, 255, 255, 0.06);
+    --border-strong: rgba(255, 255, 255, 0.12);
+    --border-accent: rgba(192, 57, 43, 0.25);
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-muted: #52525b;
     --accent: #c0392b;
-    --accent-dim: rgba(192, 57, 43, 0.12);
-    --accent-border: rgba(192, 57, 43, 0.3);
-    --gold: #c4972a;
-    --gold-dim: rgba(196, 151, 42, 0.1);
+    --accent-light: #e74c3c;
+    --accent-dim: rgba(192, 57, 43, 0.10);
+    --accent-border: rgba(192, 57, 43, 0.25);
+    --gold: #d4a437;
+    --gold-dim: rgba(212, 164, 55, 0.08);
+    --green: #34d399;
+    --green-dim: rgba(52, 211, 153, 0.08);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
   }
 
   * {
@@ -35,23 +43,24 @@
     background-color: var(--bg);
     color: var(--text-primary);
     font-family: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.65;
     margin: 0;
   }
 
   ::selection {
-    background: rgba(192, 57, 43, 0.22);
+    background: rgba(192, 57, 43, 0.25);
     color: var(--text-primary);
   }
 
-  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--bg-muted); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-muted); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
   /* ─── Prose (text sections in lessons) ─── */
   .prose-content {
-    font-size: 17px;
+    font-size: 16px;
     color: var(--text-secondary);
     line-height: 1.85;
     font-weight: 400;
@@ -71,7 +80,7 @@
   .prose-content li {
     margin-bottom: 12px;
     line-height: 1.8;
-    font-size: 17px;
+    font-size: 16px;
   }
 
   .prose-content p {
@@ -83,7 +92,6 @@
     font-style: italic;
   }
 
-  /* Section sub-header inside prose */
   .prose-content h3 {
     font-size: 13px;
     font-weight: 600;
@@ -95,7 +103,7 @@
     border-bottom: 1px solid var(--border);
   }
 
-  /* ─── Date block — date on its own line, clearly visible ─── */
+  /* ─── Date block ─── */
   .date-block {
     display: block;
     font-family: var(--font-mono);
@@ -108,7 +116,6 @@
     line-height: 1.4;
   }
 
-  /* first date-block in a section needs less top margin */
   .prose-content > .date-block:first-child {
     margin-top: 0;
   }
@@ -118,6 +125,8 @@
     width: 100%;
     border-collapse: collapse;
     margin: 16px 0 28px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
   }
 
   .prose-table th {

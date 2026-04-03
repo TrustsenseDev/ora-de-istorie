@@ -19,7 +19,7 @@ export default function Timeline({ items }: TimelineProps) {
         top: 0,
         bottom: 0,
         width: 1,
-        background: 'var(--border)',
+        background: 'linear-gradient(180deg, var(--accent-border) 0%, var(--border) 100%)',
       }} />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -52,6 +52,7 @@ export default function Timeline({ items }: TimelineProps) {
                 display: 'block',
                 lineHeight: 1.4,
                 letterSpacing: '0.04em',
+                fontWeight: 600,
               }}>
                 {item.year}
               </span>
@@ -62,8 +63,8 @@ export default function Timeline({ items }: TimelineProps) {
                 top: 8,
                 width: 10,
                 height: 10,
-                background: 'var(--bg)',
-                border: '1px solid var(--border-strong)',
+                background: 'var(--accent-dim)',
+                border: '2px solid var(--accent)',
                 borderRadius: '50%',
               }} />
             </div>

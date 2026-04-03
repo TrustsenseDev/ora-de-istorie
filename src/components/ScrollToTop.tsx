@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { ArrowUp } from 'lucide-react';
 
 export default function ScrollToTop() {
   const [visible, setVisible] = useState(false);
@@ -20,14 +21,15 @@ export default function ScrollToTop() {
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           style={{
             position: 'fixed', bottom: 32, right: 32, zIndex: 50,
-            width: 40, height: 40,
+            width: 42, height: 42,
             background: 'var(--bg-card)',
             border: '1px solid var(--border-strong)',
+            borderRadius: 10,
             color: 'var(--text-secondary)',
             cursor: 'pointer',
-            fontFamily: 'var(--font-mono)', fontSize: 14,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'all 0.15s',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
           }}
           onMouseEnter={e => {
             e.currentTarget.style.background = 'var(--accent)';
@@ -41,7 +43,7 @@ export default function ScrollToTop() {
           }}
           aria-label="Înapoi sus"
         >
-          ↑
+          <ArrowUp size={16} />
         </motion.button>
       )}
     </AnimatePresence>
