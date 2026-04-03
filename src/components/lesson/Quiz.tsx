@@ -57,6 +57,7 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
           padding: '48px 40px',
           textAlign: 'center',
           background: 'var(--bg-card)',
+          borderRadius: 12,
         }}
       >
         {/* Score display */}
@@ -65,13 +66,14 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
             fontFamily: 'var(--font-mono)', fontSize: 11,
             letterSpacing: '0.14em', textTransform: 'uppercase',
             color: 'var(--text-muted)', marginBottom: 20,
+            fontWeight: 600,
           }}>
             Rezultat final
           </div>
           <div style={{
             fontFamily: 'var(--font-display)', fontStyle: 'italic',
             fontSize: 'clamp(60px, 12vw, 100px)',
-            color: good ? '#4ade80' : 'var(--accent)',
+            color: good ? 'var(--green)' : 'var(--accent)',
             lineHeight: 1,
             letterSpacing: '-0.03em',
           }}>
@@ -96,13 +98,13 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
             transition={{ duration: 1.2, ease: 'easeOut' }}
             style={{
               position: 'absolute', left: 0, top: 0, bottom: 0,
-              background: good ? '#4ade80' : 'var(--accent)',
+              background: good ? 'var(--green)' : 'var(--accent)',
             }}
           />
         </div>
 
         <p style={{
-          fontSize: 13, color: good ? '#4ade80' : 'var(--accent)',
+          fontSize: 13, color: good ? 'var(--green)' : 'var(--accent)',
           fontFamily: 'var(--font-mono)', letterSpacing: '0.06em',
           marginBottom: 32,
         }}>
@@ -120,6 +122,7 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
             fontFamily: 'var(--font-mono)', fontSize: 12,
             letterSpacing: '0.1em', textTransform: 'uppercase',
             transition: 'all 0.15s',
+            borderRadius: 8,
           }}
           onMouseEnter={e => {
             e.currentTarget.style.borderColor = 'var(--border-strong)';
@@ -193,7 +196,7 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
           </h3>
 
           {/* Options */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 1, marginBottom: 32 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 32 }}>
             {q.options.map((opt, idx) => {
               const isCorrect = idx === q.correctAnswer;
               const isSelected = idx === selected;
@@ -206,10 +209,10 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
 
               if (showResult) {
                 if (isCorrect) {
-                  bg = 'rgba(34, 197, 94, 0.07)';
-                  border = 'rgba(34, 197, 94, 0.3)';
-                  color = '#4ade80';
-                  labelColor = '#4ade80';
+                  bg = 'var(--green-dim)';
+                  border = 'rgba(52, 211, 153, 0.25)';
+                  color = 'var(--green)';
+                  labelColor = 'var(--green)';
                 } else if (isSelected && !isCorrect) {
                   bg = 'var(--accent-dim)';
                   border = 'var(--accent-border)';
@@ -235,8 +238,9 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
                     border: `1px solid ${border}`,
                     cursor: answered ? 'default' : 'pointer',
                     textAlign: 'left',
-                    transition: 'all 0.12s',
+                    transition: 'all 0.15s',
                     width: '100%',
+                    borderRadius: 8,
                   }}
                   whileHover={!answered ? { background: 'var(--bg-muted)' } : {}}
                 >
@@ -256,7 +260,7 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
                     {opt}
                   </span>
                   {showResult && isCorrect && (
-                    <span style={{ marginLeft: 'auto', color: '#4ade80', fontSize: 12, flexShrink: 0 }}>✓</span>
+                    <span style={{ marginLeft: 'auto', color: 'var(--green)', fontSize: 12, flexShrink: 0 }}>✓</span>
                   )}
                   {showResult && isSelected && !isCorrect && (
                     <span style={{ marginLeft: 'auto', color: 'var(--accent)', fontSize: 12, flexShrink: 0 }}>✗</span>
@@ -277,9 +281,10 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
               >
                 <div style={{
                   padding: '16px 20px',
-                  background: 'var(--bg-muted)',
+                  background: 'var(--gold-dim)',
                   borderLeft: '2px solid var(--gold)',
                   marginBottom: 24,
+                  borderRadius: '0 8px 8px 0',
                 }}>
                   <div style={{
                     fontFamily: 'var(--font-mono)', fontSize: 10,
@@ -296,15 +301,16 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
                 <button
                   onClick={handleNext}
                   style={{
-                    padding: '14px 32px',
-                    background: 'var(--accent)',
-                    border: 'none',
-                    color: 'white',
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-mono)', fontSize: 12,
-                    letterSpacing: '0.1em', textTransform: 'uppercase',
-                    transition: 'opacity 0.15s',
-                    width: '100%',
+                      padding: '14px 32px',
+                      background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
+                      border: 'none',
+                      color: 'white',
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-mono)', fontSize: 12,
+                      letterSpacing: '0.1em', textTransform: 'uppercase',
+                      transition: 'opacity 0.15s',
+                      width: '100%',
+                      borderRadius: 8,
                   }}
                   onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
                   onMouseLeave={e => e.currentTarget.style.opacity = '1'}

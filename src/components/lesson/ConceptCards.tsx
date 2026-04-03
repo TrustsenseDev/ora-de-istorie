@@ -10,7 +10,7 @@ interface ConceptCardsProps {
 
 export default function ConceptCards({ items }: ConceptCardsProps) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
       {items.map((item, i) => (
         <motion.div
           key={i}
@@ -25,9 +25,10 @@ export default function ConceptCards({ items }: ConceptCardsProps) {
             padding: '24px 20px',
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
-            borderBottom: 'none',
-            transition: 'border-color 0.15s',
+            borderRadius: 10,
+            transition: 'border-color 0.2s, background 0.2s',
           }}
+          whileHover={{ borderColor: 'rgba(255,255,255,0.12)' }}
           className="concept-card"
         >
           {/* Left: number + title */}
@@ -38,6 +39,7 @@ export default function ConceptCards({ items }: ConceptCardsProps) {
               color: 'var(--accent)',
               letterSpacing: '0.1em',
               marginBottom: 10,
+              fontWeight: 600,
             }}>
               {String(i + 1).padStart(2, '0')}
             </div>
@@ -67,8 +69,6 @@ export default function ConceptCards({ items }: ConceptCardsProps) {
           </div>
         </motion.div>
       ))}
-      {/* Bottom border */}
-      <div style={{ height: 1, background: 'var(--border)' }} />
 
       <style>{`
         @media (max-width: 600px) {

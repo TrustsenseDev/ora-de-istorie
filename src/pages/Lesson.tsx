@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
+import { ArrowLeft, Clock, HelpCircle, CheckCircle } from 'lucide-react';
 import { lessons } from '../data/lessons';
 import { lessonContent } from '../data/lessonContent';
 import Timeline from '../components/lesson/Timeline';
@@ -19,7 +20,7 @@ export default function Lesson() {
     return (
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: 15 }}>Lecția nu a fost găsită.</p>
-        <Link to="/" style={{ color: 'var(--accent)', fontSize: 14 }}>← Înapoi</Link>
+        <Link to="/" style={{ color: 'var(--accent)', fontSize: 14, textDecoration: 'none' }}>← Înapoi</Link>
       </div>
     );
   }
@@ -30,11 +31,15 @@ export default function Lesson() {
   return (
     <>
       {/* Scroll progress line */}
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 2, zIndex: 100, pointerEvents: 'none' }}>
-        <div style={{ width: `${scroll}%`, height: '100%', background: 'var(--accent)', transition: 'width 0.12s linear' }} />
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, height: 3, zIndex: 100, pointerEvents: 'none' }}>
+        <div style={{
+          width: `${scroll}%`, height: '100%',
+          background: 'linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%)',
+          transition: 'width 0.12s linear',
+          borderRadius: '0 2px 2px 0',
+        }} />
       </div>
 
-      {/* max-width 760 for body text — ~65 chars per line = optimal readability */}
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px 100px' }}>
 
         {/* Back + meta */}
@@ -45,25 +50,43 @@ export default function Lesson() {
         }}>
           <Link
             to="/"
-            style={{ fontSize: 14, color: 'var(--text-muted)', textDecoration: 'none', transition: 'color 0.12s' }}
+            style={{
+              fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none',
+              transition: 'color 0.15s',
+              display: 'flex', alignItems: 'center', gap: 6,
+            }}
             onMouseEnter={e => e.currentTarget.style.color = 'var(--text-primary)'}
             onMouseLeave={e => e.currentTarget.style.color = 'var(--text-muted)'}
           >
-            ← Toate lecțiile
+            <ArrowLeft size={14} />
+            Toate lecțiile
           </Link>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
             {done && (
               <span style={{
-                fontSize: 12, color: '#4ade80',
-                padding: '3px 9px',
-                border: '1px solid rgba(74,222,128,0.2)',
-                background: 'rgba(74,222,128,0.05)',
+                fontSize: 12, color: 'var(--green)',
+                padding: '4px 10px',
+                background: 'var(--green-dim)',
+                borderRadius: 6,
+                display: 'flex', alignItems: 'center', gap: 5,
+                fontWeight: 500,
               }}>
-                ✓ completat {score !== undefined ? `· ${score}%` : ''}
+                <CheckCircle size={13} />
+                completat {score !== undefined ? `· ${score}%` : ''}
               </span>
             )}
-            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{meta.duration}</span>
-            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{meta.questionsCount} întrebări</span>
+            <span style={{
+              fontSize: 12, color: 'var(--text-muted)',
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              <Clock size={13} /> {meta.duration}
+            </span>
+            <span style={{
+              fontSize: 12, color: 'var(--text-muted)',
+              display: 'flex', alignItems: 'center', gap: 4,
+            }}>
+              <HelpCircle size={13} /> {meta.questionsCount} întrebări
+            </span>
           </div>
         </div>
 
@@ -77,8 +100,10 @@ export default function Lesson() {
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 18 }}>
             {meta.topics.map(t => (
               <span key={t} style={{
-                fontSize: 11, color: 'var(--text-muted)',
-                padding: '3px 8px', border: '1px solid var(--border)',
+                fontSize: 10, color: 'var(--text-muted)',
+                padding: '3px 10px',
+                background: 'var(--bg-muted)',
+                borderRadius: 4,
                 letterSpacing: '0.05em', textTransform: 'uppercase',
               }}>{t}</span>
             ))}
@@ -89,7 +114,7 @@ export default function Lesson() {
             color: 'var(--text-primary)',
             margin: '0 0 14px',
             lineHeight: 1.25,
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.025em',
           }}>
             {meta.title}
           </h1>
@@ -117,8 +142,8 @@ export default function Lesson() {
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 32 }}>
                 <span style={{
                   fontFamily: 'var(--font-mono)', fontSize: 11,
-                  color: 'var(--text-muted)', letterSpacing: '0.1em',
-                  flexShrink: 0,
+                  color: 'var(--accent)', letterSpacing: '0.1em',
+                  flexShrink: 0, fontWeight: 600,
                 }}>
                   {String(idx + 1).padStart(2, '0')}
                 </span>
@@ -148,8 +173,11 @@ export default function Lesson() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 36 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--text-muted)', letterSpacing: '0.1em' }}>
+            <div style={{
+              display: 'flex', alignItems: 'baseline', gap: 18, marginBottom: 36,
+              paddingBottom: 20, borderBottom: '1px solid var(--border)',
+            }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--accent)', letterSpacing: '0.1em', fontWeight: 600 }}>
                 test
               </span>
               <h2 style={{

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
+import { BookOpen, FlaskConical, Menu, X } from 'lucide-react';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,27 +30,32 @@ export default function Navbar() {
     >
       <BacStrip />
       <nav style={{
-        background: scrolled ? 'rgba(12,12,12,0.96)' : 'var(--bg)',
-        backdropFilter: scrolled ? 'blur(10px)' : 'none',
+        background: scrolled ? 'rgba(9,9,11,0.92)' : 'var(--bg)',
+        backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
         borderBottom: '1px solid var(--border)',
-        transition: 'background 0.25s',
+        transition: 'all 0.3s ease',
       }}>
-        <div style={{ maxWidth: 960, margin: '0 auto', padding: '0 20px', display: 'flex', alignItems: 'center', height: 52, gap: 8 }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', height: 56, gap: 8 }}>
 
           {/* Logo */}
-          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 8, marginRight: 'auto' }}>
-            <div style={{ width: 24, height: 24, background: 'var(--accent)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-              <span style={{ color: 'white', fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>H</span>
+          <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, marginRight: 'auto' }}>
+            <div style={{
+              width: 28, height: 28,
+              background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
+              borderRadius: 6,
+              display: 'grid', placeItems: 'center', flexShrink: 0,
+            }}>
+              <span style={{ color: 'white', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>H</span>
             </div>
-            <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.01em' }}>
+            <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
               IstorieBac
             </span>
           </Link>
 
           {/* Desktop links */}
-          <div style={{ display: 'flex', gap: 4, alignItems: 'center' }} className="nav-desktop">
-            <NavLink to="/" active={loc.pathname === '/'}>Lecții</NavLink>
-            <NavLink to="/simulare" active={loc.pathname === '/simulare'} accent>Simulare</NavLink>
+          <div style={{ display: 'flex', gap: 2, alignItems: 'center' }} className="nav-desktop">
+            <NavLink to="/" active={loc.pathname === '/'} icon={<BookOpen size={14} />}>Lecții</NavLink>
+            <NavLink to="/simulare" active={loc.pathname === '/simulare'} accent icon={<FlaskConical size={14} />}>Simulare</NavLink>
           </div>
 
           {/* Mobile toggle */}
@@ -57,13 +63,14 @@ export default function Navbar() {
             onClick={() => setMenuOpen(p => !p)}
             className="nav-mobile-btn"
             style={{
-              display: 'none', background: 'none',
-              border: '1px solid var(--border)', padding: '5px 10px',
-              color: 'var(--text-secondary)', cursor: 'pointer', fontSize: 12,
-              fontFamily: 'var(--font-mono)', letterSpacing: '0.06em',
+              display: 'none', background: 'var(--bg-muted)',
+              border: '1px solid var(--border)', padding: 8,
+              color: 'var(--text-secondary)', cursor: 'pointer',
+              borderRadius: 'var(--radius-xs)',
+              lineHeight: 0,
             }}
           >
-            {menuOpen ? '✕' : 'menu'}
+            {menuOpen ? <X size={16} /> : <Menu size={16} />}
           </button>
         </div>
 
@@ -76,9 +83,9 @@ export default function Navbar() {
               exit={{ height: 0, opacity: 0 }}
               style={{ overflow: 'hidden', borderTop: '1px solid var(--border)' }}
             >
-              <div style={{ padding: '10px 20px 16px' }}>
-                <MLink to="/" onClick={() => setMenuOpen(false)}>Lecții</MLink>
-                <MLink to="/simulare" onClick={() => setMenuOpen(false)} accent>Simulare</MLink>
+              <div style={{ padding: '12px 24px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <MLink to="/" onClick={() => setMenuOpen(false)} icon={<BookOpen size={15} />}>Lecții</MLink>
+                <MLink to="/simulare" onClick={() => setMenuOpen(false)} accent icon={<FlaskConical size={15} />}>Simulare</MLink>
               </div>
             </motion.div>
           )}
@@ -94,30 +101,36 @@ export default function Navbar() {
   );
 }
 
-function NavLink({ to, children, active, accent }: any) {
+function NavLink({ to, children, active, accent, icon }: any) {
   return (
     <Link to={to} style={{
-      padding: '6px 14px', textDecoration: 'none', fontSize: 13, fontWeight: 500,
+      padding: '7px 16px', textDecoration: 'none', fontSize: 13, fontWeight: 500,
       color: accent ? 'white' : active ? 'var(--text-primary)' : 'var(--text-secondary)',
-      background: accent ? 'var(--accent)' : active ? 'var(--bg-muted)' : 'transparent',
+      background: accent ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)' : active ? 'var(--bg-muted)' : 'transparent',
       border: `1px solid ${accent ? 'transparent' : active ? 'var(--border)' : 'transparent'}`,
-      transition: 'all 0.12s',
+      borderRadius: 'var(--radius-xs)',
+      transition: 'all 0.15s ease',
       letterSpacing: '-0.01em',
+      display: 'flex', alignItems: 'center', gap: 6,
     }}>
+      {icon}
       {children}
     </Link>
   );
 }
 
-function MLink({ to, children, onClick, accent }: any) {
+function MLink({ to, children, onClick, accent, icon }: any) {
   return (
     <Link to={to} onClick={onClick} style={{
-      display: 'block', padding: '10px 12px', margin: '3px 0',
+      display: 'flex', alignItems: 'center', gap: 10,
+      padding: '12px 14px',
       textDecoration: 'none', fontSize: 14, fontWeight: 500,
       color: accent ? 'white' : 'var(--text-secondary)',
-      background: accent ? 'var(--accent)' : 'var(--bg-muted)',
+      background: accent ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)' : 'var(--bg-muted)',
       border: '1px solid var(--border)',
+      borderRadius: 'var(--radius-xs)',
     }}>
+      {icon}
       {children}
     </Link>
   );
@@ -130,30 +143,43 @@ function BacStrip() {
     return () => clearInterval(id);
   }, []);
   if (!time) return null;
+
+  const urgent = time.days < 30;
+
   return (
     <div style={{
-      background: 'var(--bg-card)',
-      borderBottom: '1px solid var(--border)',
-      padding: '5px 20px',
+      background: urgent
+        ? 'linear-gradient(90deg, rgba(192,57,43,0.12) 0%, rgba(192,57,43,0.06) 100%)'
+        : 'var(--bg-card)',
+      borderBottom: `1px solid ${urgent ? 'var(--accent-border)' : 'var(--border)'}`,
+      padding: '6px 24px',
       display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16, flexWrap: 'wrap',
     }}>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+      <span style={{
+        fontFamily: 'var(--font-mono)', fontSize: 10,
+        color: urgent ? 'var(--accent)' : 'var(--text-muted)',
+        letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600,
+      }}>
         Istorie BAC 2026
       </span>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         {[{ v: time.days, l: 'zile' }, { v: time.hours, l: 'ore' }, { v: time.minutes, l: 'min' }, { v: time.seconds, l: 'sec' }].map(({ v, l }, i) => (
-          <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--text-primary)', fontWeight: 500 }}>
+          <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ textAlign: 'center', minWidth: 28 }}>
+              <div style={{
+                fontFamily: 'var(--font-mono)', fontSize: 13,
+                color: urgent ? 'var(--accent-light)' : 'var(--text-primary)',
+                fontWeight: 600, lineHeight: 1.2,
+              }}>
                 {String(v).padStart(2, '0')}
               </div>
               <div style={{ fontSize: 8, color: 'var(--text-muted)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{l}</div>
             </div>
-            {i < 3 && <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 10 }}>:</span>}
+            {i < 3 && <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: 10, opacity: 0.5 }}>:</span>}
           </div>
         ))}
       </div>
-      <span style={{ fontSize: 11, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>30 iunie · E.c</span>
+      <span style={{ fontSize: 10, color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: '0.05em' }}>30 iun · E.c</span>
     </div>
   );
 }
