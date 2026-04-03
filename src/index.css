@@ -93,7 +93,7 @@
   }
 
   .prose-content h3 {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: var(--text-muted);
     margin: 36px 0 16px;
@@ -101,6 +101,16 @@
     text-transform: uppercase;
     padding-bottom: 10px;
     border-bottom: 1px solid var(--border);
+  }
+
+  .prose-content blockquote {
+    margin: 20px 0;
+    padding: 14px 20px;
+    border-left: 2px solid var(--accent-border);
+    background: var(--accent-dim);
+    border-radius: 0 8px 8px 0;
+    font-style: italic;
+    color: var(--text-secondary);
   }
 
   /* ─── Date block ─── */
@@ -161,5 +171,25 @@
   .prose-table td:last-child {
     color: var(--text-muted);
     font-size: 13px;
+  }
+
+  /* ─── Timeline responsive ─── */
+  @media (max-width: 480px) {
+    .timeline-grid {
+      grid-template-columns: 80px 12px 1fr !important;
+    }
+  }
+
+  /* ─── Focus styles ─── */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ─── Smooth transitions ─── */
+  a {
+    transition: color 0.15s ease;
   }
 }

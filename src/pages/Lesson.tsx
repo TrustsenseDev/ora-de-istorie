@@ -101,10 +101,11 @@ export default function Lesson() {
             {meta.topics.map(t => (
               <span key={t} style={{
                 fontSize: 10, color: 'var(--text-muted)',
-                padding: '3px 10px',
+                padding: '4px 10px',
                 background: 'var(--bg-muted)',
-                borderRadius: 4,
+                borderRadius: 5,
                 letterSpacing: '0.05em', textTransform: 'uppercase',
+                border: '1px solid var(--border)',
               }}>{t}</span>
             ))}
           </div>
@@ -118,7 +119,7 @@ export default function Lesson() {
           }}>
             {meta.title}
           </h1>
-          <p style={{ fontSize: 16, color: 'var(--text-muted)', lineHeight: 1.65, margin: 0, fontWeight: 400 }}>
+          <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.65, margin: 0, fontWeight: 400 }}>
             {meta.description}
           </p>
         </motion.div>
@@ -160,7 +161,7 @@ export default function Lesson() {
               </div>
 
               {section.type === 'text' && (
-                <div className="prose-content">{section.content}</div>
+                <div className="prose-content" style={{ maxWidth: 680 }}>{section.content}</div>
               )}
               {section.type === 'timeline' && section.items && <Timeline items={section.items} />}
               {section.type === 'cards' && section.items && <ConceptCards items={section.items} />}

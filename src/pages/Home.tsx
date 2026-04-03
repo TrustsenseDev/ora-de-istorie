@@ -282,6 +282,7 @@ function LessonCard({ lesson, index, done, score }: any) {
               background: 'var(--bg-muted)',
               borderRadius: 4,
               letterSpacing: '0.02em',
+              border: '1px solid var(--border)',
             }}>
               {t}
             </span>
