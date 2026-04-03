@@ -11,15 +11,16 @@ interface TimelineProps {
 
 export default function Timeline({ items }: TimelineProps) {
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative', overflow: 'visible' }}>
       {/* Vertical line */}
       <div style={{
         position: 'absolute',
-        left: 100,
-        top: 0,
-        bottom: 0,
-        width: 1,
-        background: 'linear-gradient(180deg, var(--accent-border) 0%, var(--border) 100%)',
+        left: 119,
+        top: 12,
+        bottom: 12,
+        width: 2,
+        background: 'linear-gradient(180deg, var(--accent) 0%, var(--accent-border) 40%, var(--border) 100%)',
+        borderRadius: 1,
       }} />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -30,25 +31,26 @@ export default function Timeline({ items }: TimelineProps) {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.35, delay: i * 0.05 }}
+            className="timeline-grid"
             style={{
               display: 'grid',
-              gridTemplateColumns: '100px 1fr',
-              gap: '0 32px',
+              gridTemplateColumns: '110px 12px 1fr',
+              gap: '0 16px',
               padding: '22px 0',
-              borderBottom: '1px solid var(--border)',
+              borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none',
+              alignItems: 'start',
             }}
           >
             {/* Year */}
             <div style={{
               paddingTop: 3,
               textAlign: 'right',
-              paddingRight: 0,
-              position: 'relative',
+              paddingRight: 4,
             }}>
               <span style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: 12,
-                color: 'var(--accent)',
+                color: 'var(--accent-light)',
                 display: 'block',
                 lineHeight: 1.4,
                 letterSpacing: '0.04em',
@@ -56,21 +58,27 @@ export default function Timeline({ items }: TimelineProps) {
               }}>
                 {item.year}
               </span>
-              {/* Dot */}
+            </div>
+
+            {/* Dot column */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              paddingTop: 6,
+            }}>
               <div style={{
-                position: 'absolute',
-                right: -6,
-                top: 8,
                 width: 10,
                 height: 10,
                 background: 'var(--accent-dim)',
                 border: '2px solid var(--accent)',
                 borderRadius: '50%',
+                flexShrink: 0,
+                boxShadow: '0 0 0 3px var(--bg)',
               }} />
             </div>
 
             {/* Content */}
-            <div style={{ paddingLeft: 12 }}>
+            <div style={{ paddingLeft: 4 }}>
               <h3 style={{
                 fontSize: 16,
                 fontWeight: 600,
