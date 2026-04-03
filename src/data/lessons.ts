@@ -65,10 +65,10 @@ export const lessons = [
   {
     id: 'romania-razboiul-rece',
     title: 'România în perioada Războiului Rece',
-    description: 'Evoluția României în contextul confruntării dintre blocul comunist și cel capitalist.',
-    topics: ['Războiul Rece', 'Stalinism', 'Național-comunism', 'Politica externă'],
-    duration: '~40 min',
-    questionsCount: 10,
+    description: 'Confruntarea SUA–URSS, crizele Războiului Rece, România în blocul sovietic, politica de desovietizare și național-comunismul lui Ceaușescu.',
+    topics: ['Războiul Rece', 'Cortina de Fier', 'Stalinism', 'Național-comunism', 'Politica externă', 'Ceaușescu'],
+    duration: '~50 min',
+    questionsCount: 15,
     available: true,
   }
 ];
