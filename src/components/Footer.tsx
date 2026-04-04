@@ -30,7 +30,7 @@ export default function Footer() {
             color: 'var(--text-muted)',
             fontWeight: 500,
           }}>
-            Ora de Istorie
+            BacPrep
           </span>
         </div>
 
@@ -41,7 +41,7 @@ export default function Footer() {
           fontFamily: 'var(--font-mono)',
           letterSpacing: '0.04em',
         }}>
-          Pregătire BAC &mdash; Istorie
+          Pregătire BAC 2026 &mdash; Toate materiile
         </p>
       </div>
     </footer>

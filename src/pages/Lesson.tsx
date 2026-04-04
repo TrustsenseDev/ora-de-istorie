@@ -20,7 +20,7 @@ export default function Lesson() {
     return (
       <div style={{ maxWidth: 760, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
         <p style={{ color: 'var(--text-muted)', fontSize: 15 }}>Lecția nu a fost găsită.</p>
-        <Link to="/" style={{ color: 'var(--accent)', fontSize: 14, textDecoration: 'none' }}>← Înapoi</Link>
+        <Link to="/istorie" style={{ color: 'var(--accent)', fontSize: 14, textDecoration: 'none' }}>← Înapoi la Istorie</Link>
       </div>
     );
   }
@@ -49,7 +49,7 @@ export default function Lesson() {
           flexWrap: 'wrap', gap: 12,
         }}>
           <Link
-            to="/"
+            to="/istorie"
             style={{
               fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none',
               transition: 'color 0.15s',

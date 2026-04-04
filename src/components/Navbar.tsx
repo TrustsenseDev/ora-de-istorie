@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { BookOpen, FlaskConical, Menu, X } from 'lucide-react';
+import { BookOpen, Brain, FlaskConical, Menu, X, Home } from 'lucide-react';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -9,6 +9,9 @@ export default function Navbar() {
   const [visible, setVisible] = useState(true);
   const lastY = useRef(0);
   const loc = useLocation();
+
+  const isHistoire = loc.pathname.startsWith('/istorie');
+  const isLogic = loc.pathname.startsWith('/logica');
 
   useEffect(() => {
     const onScroll = () => {
@@ -41,21 +44,28 @@ export default function Navbar() {
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, marginRight: 'auto' }}>
             <div style={{
               width: 28, height: 28,
-              background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
+              background: isLogic
+                ? 'linear-gradient(135deg, var(--logic) 0%, var(--logic-light) 100%)'
+                : 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
               borderRadius: 6,
               display: 'grid', placeItems: 'center', flexShrink: 0,
+              transition: 'background 0.3s',
             }}>
-              <span style={{ color: 'white', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>H</span>
+              <span style={{ color: 'white', fontSize: 13, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>B</span>
             </div>
             <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-              IstorieBac
+              BacPrep
             </span>
           </Link>
 
           {/* Desktop links */}
           <div style={{ display: 'flex', gap: 2, alignItems: 'center' }} className="nav-desktop">
-            <NavLink to="/" active={loc.pathname === '/'} icon={<BookOpen size={14} />}>Lecții</NavLink>
-            <NavLink to="/simulare" active={loc.pathname === '/simulare'} accent icon={<FlaskConical size={14} />}>Simulare</NavLink>
+            <NavLink to="/" active={loc.pathname === '/'} icon={<Home size={14} />}>Acasă</NavLink>
+            <NavLink to="/istorie" active={isHistoire} icon={<BookOpen size={14} />} accent={isHistoire ? 'history' : undefined}>Istorie</NavLink>
+            <NavLink to="/logica" active={isLogic} icon={<Brain size={14} />} accent={isLogic ? 'logic' : undefined}>Logică</NavLink>
+            {isHistoire && (
+              <NavLink to="/istorie/simulare" active={loc.pathname === '/istorie/simulare'} icon={<FlaskConical size={14} />} accent="simulare">Simulare</NavLink>
+            )}
           </div>
 
           {/* Mobile toggle */}
@@ -84,15 +94,17 @@ export default function Navbar() {
               style={{ overflow: 'hidden', borderTop: '1px solid var(--border)' }}
             >
               <div style={{ padding: '12px 24px 16px', display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <MLink to="/" onClick={() => setMenuOpen(false)} icon={<BookOpen size={15} />}>Lecții</MLink>
-                <MLink to="/simulare" onClick={() => setMenuOpen(false)} accent icon={<FlaskConical size={15} />}>Simulare</MLink>
+                <MLink to="/" onClick={() => setMenuOpen(false)} icon={<Home size={15} />}>Acasă</MLink>
+                <MLink to="/istorie" onClick={() => setMenuOpen(false)} icon={<BookOpen size={15} />}>Istorie</MLink>
+                <MLink to="/logica" onClick={() => setMenuOpen(false)} icon={<Brain size={15} />} accent="logic">Logică</MLink>
+                <MLink to="/istorie/simulare" onClick={() => setMenuOpen(false)} icon={<FlaskConical size={15} />} accent="simulare">Simulare BAC</MLink>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
       <style>{`
-        @media (max-width: 580px) {
+        @media (max-width: 640px) {
           .nav-desktop { display: none !important; }
           .nav-mobile-btn { display: block !important; }
         }
@@ -102,11 +114,19 @@ export default function Navbar() {
 }
 
 function NavLink({ to, children, active, accent, icon }: any) {
+  const bg = accent === 'history'
+    ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)'
+    : accent === 'logic'
+    ? 'linear-gradient(135deg, var(--logic) 0%, var(--logic-light) 100%)'
+    : accent === 'simulare'
+    ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)'
+    : active ? 'var(--bg-muted)' : 'transparent';
+
   return (
     <Link to={to} style={{
       padding: '7px 16px', textDecoration: 'none', fontSize: 13, fontWeight: 500,
       color: accent ? 'white' : active ? 'var(--text-primary)' : 'var(--text-secondary)',
-      background: accent ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)' : active ? 'var(--bg-muted)' : 'transparent',
+      background: bg,
       border: `1px solid ${accent ? 'transparent' : active ? 'var(--border)' : 'transparent'}`,
       borderRadius: 'var(--radius-xs)',
       transition: 'all 0.15s ease',
@@ -120,13 +140,18 @@ function NavLink({ to, children, active, accent, icon }: any) {
 }
 
 function MLink({ to, children, onClick, accent, icon }: any) {
+  const bg = accent === 'logic'
+    ? 'linear-gradient(135deg, var(--logic) 0%, var(--logic-light) 100%)'
+    : accent === 'simulare'
+    ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)'
+    : 'var(--bg-muted)';
   return (
     <Link to={to} onClick={onClick} style={{
       display: 'flex', alignItems: 'center', gap: 10,
       padding: '12px 14px',
       textDecoration: 'none', fontSize: 14, fontWeight: 500,
       color: accent ? 'white' : 'var(--text-secondary)',
-      background: accent ? 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)' : 'var(--bg-muted)',
+      background: bg,
       border: '1px solid var(--border)',
       borderRadius: 'var(--radius-xs)',
     }}>
@@ -160,7 +185,7 @@ function BacStrip() {
         color: urgent ? 'var(--accent)' : 'var(--text-muted)',
         letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 600,
       }}>
-        Istorie BAC 2026
+        BAC 2026
       </span>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         {[{ v: time.days, l: 'zile' }, { v: time.hours, l: 'ore' }, { v: time.minutes, l: 'min' }, { v: time.seconds, l: 'sec' }].map(({ v, l }, i) => (

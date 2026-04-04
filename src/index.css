@@ -18,10 +18,17 @@
     --text-primary: #f4f4f5;
     --text-secondary: #a1a1aa;
     --text-muted: #52525b;
+    /* History accent — red */
     --accent: #c0392b;
     --accent-light: #e74c3c;
     --accent-dim: rgba(192, 57, 43, 0.10);
     --accent-border: rgba(192, 57, 43, 0.25);
+    /* Logic accent — indigo/blue */
+    --logic: #6366f1;
+    --logic-light: #818cf8;
+    --logic-dim: rgba(99, 102, 241, 0.10);
+    --logic-border: rgba(99, 102, 241, 0.25);
+    /* Shared utility colors */
     --gold: #d4a437;
     --gold-dim: rgba(212, 164, 55, 0.08);
     --green: #34d399;

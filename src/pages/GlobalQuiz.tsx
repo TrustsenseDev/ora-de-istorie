@@ -173,7 +173,7 @@ export default function GlobalQuiz() {
       {/* Header */}
       <div style={{ padding: '32px 0 28px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-          <Link to="/" style={{
+          <Link to="/istorie" style={{
             fontSize: 13, color: 'var(--text-muted)', textDecoration: 'none',
             display: 'flex', alignItems: 'center', gap: 6,
             transition: 'color 0.15s',

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { Search, BookOpen, Clock, CheckCircle, ArrowRight, FlaskConical } from 'lucide-react';
+import { Search, BookOpen, Clock, CheckCircle, ArrowRight, FlaskConical, ChevronLeft } from 'lucide-react';
 import { lessons } from '../data/lessons';
 import { useProgress } from '../hooks/useProgress';
 
@@ -38,6 +38,11 @@ export default function Home() {
           fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--accent)',
           letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 16, fontWeight: 600,
         }}>
+          <Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>
+            <ChevronLeft size={11} style={{ display: 'inline', verticalAlign: 'middle', marginRight: 2 }} />
+            Toate materiile
+          </Link>
+          <span style={{ color: 'var(--text-muted)', margin: '0 8px' }}>·</span>
           Pregătire Bacalaureat 2026
         </div>
         <h1 style={{
@@ -174,7 +179,7 @@ export default function Home() {
         transition={{ delay: 0.3 }}
         style={{ paddingTop: 24, marginTop: 8 }}
       >
-        <Link to="/simulare" style={{
+        <Link to="/istorie/simulare" style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '20px 24px',
           background: 'linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%)',
@@ -322,5 +327,5 @@ function LessonCard({ lesson, index, done, score }: any) {
   );
 
   if (!available) return inner;
-  return <Link to={`/lesson/${lesson.id}`} style={{ textDecoration: 'none', display: 'block' }}>{inner}</Link>;
+  return <Link to={`/istorie/lesson/${lesson.id}`} style={{ textDecoration: 'none', display: 'block' }}>{inner}</Link>;
 }
