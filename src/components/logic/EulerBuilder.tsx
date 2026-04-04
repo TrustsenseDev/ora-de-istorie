@@ -36,6 +36,9 @@ export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBu
 
   const svgRef = useRef<SVGSVGElement>(null);
 
+  // Ref to store the offset between mouse click and circle center
+  const grabOffset = useRef({ x: 0, y: 0 });
+
   const handleReset = () => {
     setPlaced({});
     setFeedback({ status: 'idle', message: '' });
@@ -134,39 +137,57 @@ export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBu
             const colors = EULER_COLORS[t.id as keyof typeof EULER_COLORS] || EULER_COLORS.A;
             const state = placed[t.id];
             
-            // Fixed initial coordinates if not placed yet (bottom area)
-            // Staggered more to prevent overlap of identical terms A/B initially
             const initialX = idx * 65 + 60;
             const initialY = HEIGHT - 45;
+
+            const cx = state ? state.x : initialX;
+            const cy = state ? state.y : initialY;
 
             return (
               <motion.g
                 key={t.id}
                 drag
                 dragMomentum={false}
-                layout
-                // Map screen coordinates back to SVG coordinates in onDragEnd
+                onDragStart={(_, info) => {
+                  const svg = svgRef.current;
+                  if (svg) {
+                    const CTM = svg.getScreenCTM()?.inverse();
+                    if (CTM) {
+                      const pt = svg.createSVGPoint();
+                      pt.x = info.point.x;
+                      pt.y = info.point.y;
+                      const svgPt = pt.matrixTransform(CTM);
+                      // Offset from cursor to center
+                      grabOffset.current = {
+                        x: svgPt.x - cx,
+                        y: svgPt.y - cy
+                      };
+                    }
+                  }
+                }}
                 onDragEnd={(_, info) => {
                    const svg = svgRef.current;
                    if (svg) {
-                     const CTM = svg.getScreenCTM();
+                     const CTM = svg.getScreenCTM()?.inverse();
                      if (CTM) {
-                       // info.point is absolute page position
                        const pt = svg.createSVGPoint();
                        pt.x = info.point.x;
                        pt.y = info.point.y;
-                       const svgPt = pt.matrixTransform(CTM.inverse());
+                       const svgPt = pt.matrixTransform(CTM);
                        
                        setPlaced(prev => ({
                          ...prev,
-                         [t.id]: { x: svgPt.x, y: svgPt.y, r: t.r }
+                         [t.id]: { 
+                           x: svgPt.x - grabOffset.current.x, 
+                           y: svgPt.y - grabOffset.current.y, 
+                           r: t.r 
+                         }
                        }));
                      }
                    }
                 }}
-                initial={{ x: initialX, y: initialY }}
-                animate={state ? { x: state.x, y: state.y } : {}}
-                transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                animate={{ x: cx, y: cy }}
+                transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 0.8 }}
                 style={{ cursor: 'grab' }}
               >
                 <circle
