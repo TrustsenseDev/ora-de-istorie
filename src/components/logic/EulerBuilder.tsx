@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
+import { motion, useMotionValue, useSpring, AnimatePresence } from 'motion/react';
 import { CheckCircle, XCircle, RefreshCw, Info, HelpCircle, Magnet } from 'lucide-react';
 import { EulerRule, EulerRelation } from '../../data/logic/raporturi-intre-termeni-euler';
 import { EULER_COLORS } from './EulerDiagram';
