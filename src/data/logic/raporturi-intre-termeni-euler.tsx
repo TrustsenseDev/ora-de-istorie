@@ -2,6 +2,24 @@ import EulerDiagram from '../../components/logic/EulerDiagram';
 import RelationCard from '../../components/logic/RelationCard';
 import PropositionEvaluator, { Proposition } from '../../components/logic/PropositionEvaluator';
 
+export type EulerRelation = 'identitate' | 'subordonare' | 'incrucisare' | 'contrarietate';
+
+export interface EulerRule {
+  a: string;
+  b: string;
+  relation: EulerRelation;
+}
+
+export const EULER_RULES: EulerRule[] = [
+  { a: 'A', b: 'B', relation: 'identitate' },
+  { a: 'C', b: 'A', relation: 'subordonare' },
+  { a: 'D', b: 'B', relation: 'subordonare' },
+  { a: 'D', b: 'C', relation: 'incrucisare' },
+  { a: 'E', b: 'A', relation: 'incrucisare' },
+  { a: 'E', b: 'C', relation: 'contrarietate' },
+  { a: 'E', b: 'D', relation: 'contrarietate' },
+];
+
 /* ─── Term definitions from the exercise ─────────────────────────────────────
    A și B — raport de identitate (A = B, cerc complet suprapus)
    C — specie a lui A (C ⊂ A)
@@ -10,11 +28,11 @@ import PropositionEvaluator, { Proposition } from '../../components/logic/Propos
    ─────────────────────────────────────────────────────────────────────────── */
 
 export const EULER_TERMS = [
-  { id: 'A', label: 'A (= B)',   cx: 200, cy: 130, rx: 130, ry: 90,  color: '#c0392b' },
-  { id: 'B', label: 'B (= A)',   cx: 200, cy: 130, rx: 130, ry: 90,  color: '#3498db' },
-  { id: 'C', label: 'C ⊂ A',    cx: 155, cy: 140, rx:  60, ry: 42,  color: '#27ae60' },
-  { id: 'D', label: 'D ⊂ B, ∩C', cx: 210, cy: 140, rx:  55, ry: 40,  color: '#9b59b6' },
-  { id: 'E', label: 'E ∩A, ≠C,D', cx: 295, cy: 118, rx:  70, ry: 52,  color: '#e67e22' },
+  { id: 'A', label: 'A (= B)',   cx: 180, cy: 140, rx: 120, ry: 95,  color: '#c0392b' },
+  { id: 'B', label: 'B (= A)',   cx: 180, cy: 140, rx: 120, ry: 95,  color: '#3498db' },
+  { id: 'C', label: 'C ⊂ A',    cx: 120, cy: 140, rx:  45, ry: 45,  color: '#27ae60' },
+  { id: 'D', label: 'D ⊂ B, ∩C', cx: 160, cy: 140, rx:  45, ry: 45,  color: '#9b59b6' },
+  { id: 'E', label: 'E ∩A, ≠C,D', cx: 300, cy: 140, rx:  60, ry: 60,  color: '#e67e22' },
 ];
 
 export const PROPOSITIONS: Proposition[] = [
@@ -138,6 +156,7 @@ export const RELATION_CARDS = [
 export const EXERCISE_CONTENT = {
   id: 'raporturi-intre-termeni-euler',
   eulerTerms: EULER_TERMS,
+  eulerRules: EULER_RULES,
   propositions: PROPOSITIONS,
   relationCards: RELATION_CARDS,
 };

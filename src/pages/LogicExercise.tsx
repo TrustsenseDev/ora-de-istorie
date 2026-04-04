@@ -7,8 +7,10 @@ import { logicExercises } from '../data/logicExercises';
 import { useParams } from 'react-router-dom';
 import EulerDiagram from '../components/logic/EulerDiagram';
 import RelationCard from '../components/logic/RelationCard';
+import EulerBuilder from '../components/logic/EulerBuilder';
 import PropositionEvaluator from '../components/logic/PropositionEvaluator';
-import { EULER_TERMS, PROPOSITIONS, RELATION_CARDS } from '../data/logic/raporturi-intre-termeni-euler';
+import { EULER_TERMS, PROPOSITIONS, RELATION_CARDS, EULER_RULES } from '../data/logic/raporturi-intre-termeni-euler';
+import { EULER_COLORS } from '../components/logic/EulerDiagram';
 import { useScrollProgress } from '../hooks/useScrollProgress';
 
 export default function LogicExercise() {
@@ -195,10 +197,26 @@ export default function LogicExercise() {
                 </ul>
               </StepCard>
 
-              <StepCard step={2} title="Construim diagrama Euler">
-                <p>Desenăm cercurile respectând condițiile de mai sus. <strong>A și B</strong> sunt identice (cerc suprapus). <strong>C</strong> și <strong>D</strong> sunt înăuntrul lui A, cu suprapunere parțială. <strong>E</strong> iese parțial din A și nu atinge C sau D.</p>
+              <StepCard step={2} title="Construiește diagrama Euler">
+                <p style={{ marginBottom: 20 }}>
+                  Trage termenii din partea de jos în spațiul diagramei pentru a reprezenta raporturile corect. 
+                  <strong> A și B</strong> sunt identice, <strong>C și D</strong> sunt în interior, iar <strong>E</strong> este la margine.
+                </p>
                 <div style={{ marginTop: 16 }}>
-                  <EulerDiagram terms={EULER_TERMS} title="Diagrama Euler — soluție" />
+                  <EulerBuilder 
+                    title="Diagramă Interactivă — Rezolvă exercițiul"
+                    terms={[
+                      { id: 'A', label: 'Termenul A', color: EULER_COLORS.A.stroke, r: 90 },
+                      { id: 'B', label: 'Termenul B', color: EULER_COLORS.B.stroke, r: 90 },
+                      { id: 'C', label: 'Termenul C', color: EULER_COLORS.C.stroke, r: 40 },
+                      { id: 'D', label: 'Termenul D', color: EULER_COLORS.D.stroke, r: 40 },
+                      { id: 'E', label: 'Termenul E', color: EULER_COLORS.E.stroke, r: 45 },
+                    ]}
+                    rules={EULER_RULES}
+                  />
+                </div>
+                <div style={{ marginTop: 24, padding: '12px 16px', background: 'var(--bg-muted)', borderRadius: 8, fontSize: 13 }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Sfat: Pentru <strong>identitate</strong>, pune cercurile A și B exact unul peste celălalt.</span>
                 </div>
               </StepCard>
 

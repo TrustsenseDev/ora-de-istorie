@@ -10,19 +10,19 @@ export interface EulerTerm {
   color: string;   // fill color
 }
 
-interface EulerDiagramProps {
-  terms: EulerTerm[];
-  width?: number;
-  title?: string;
-}
-
-const COLORS = {
+export const EULER_COLORS = {
   A: { fill: 'rgba(192,57,43,0.12)', stroke: 'rgba(192,57,43,0.7)', label: '#e74c3c' },
   B: { fill: 'rgba(52,152,219,0.12)', stroke: 'rgba(52,152,219,0.7)', label: '#3498db' },
   C: { fill: 'rgba(39,174,96,0.12)', stroke: 'rgba(39,174,96,0.7)', label: '#27ae60' },
   D: { fill: 'rgba(155,89,182,0.12)', stroke: 'rgba(155,89,182,0.7)', label: '#9b59b6' },
   E: { fill: 'rgba(230,126,34,0.12)', stroke: 'rgba(230,126,34,0.7)', label: '#e67e22' },
 };
+
+interface EulerDiagramProps {
+  terms: EulerTerm[];
+  width?: number;
+  title?: string;
+}
 
 export default function EulerDiagram({ terms, title }: EulerDiagramProps) {
   return (
@@ -57,7 +57,7 @@ export default function EulerDiagram({ terms, title }: EulerDiagramProps) {
 
           {/* Ellipses — rendered from back to front */}
           {terms.map((term, i) => {
-            const c = COLORS[term.id as keyof typeof COLORS] || COLORS.A;
+            const c = EULER_COLORS[term.id as keyof typeof EULER_COLORS] || EULER_COLORS.A;
             return (
               <motion.ellipse
                 key={term.id}
@@ -78,7 +78,7 @@ export default function EulerDiagram({ terms, title }: EulerDiagramProps) {
 
           {/* Labels */}
           {terms.map((term, i) => {
-            const c = COLORS[term.id as keyof typeof COLORS] || COLORS.A;
+            const c = EULER_COLORS[term.id as keyof typeof EULER_COLORS] || EULER_COLORS.A;
             return (
               <motion.g
                 key={`label-${term.id}`}
@@ -128,7 +128,7 @@ export default function EulerDiagram({ terms, title }: EulerDiagramProps) {
           borderTop: '1px solid var(--border)', paddingTop: 12, marginTop: 4,
         }}>
           {terms.map(term => {
-            const c = COLORS[term.id as keyof typeof COLORS] || COLORS.A;
+            const c = EULER_COLORS[term.id as keyof typeof EULER_COLORS] || EULER_COLORS.A;
             return (
               <div key={`leg-${term.id}`} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div style={{

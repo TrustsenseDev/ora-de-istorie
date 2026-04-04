@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 
-interface RelationCardProps {
+export interface RelationCardProps {
   name: string;
   symbol: string;
   color: string;
