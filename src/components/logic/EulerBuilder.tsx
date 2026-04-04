@@ -1,21 +1,51 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, useMotionValue, useSpring, AnimatePresence } from 'motion/react';
-import { CheckCircle, XCircle, RefreshCw, Info, HelpCircle, Magnet } from 'lucide-react';
-import { EulerRule, EulerRelation } from '../../data/logic/raporturi-intre-termeni-euler';
+/**
+ * EulerBuilder.tsx — Production-ready interactive SVG drag-and-drop
+ *
+ * THREE ROOT CAUSES FIXED:
+ *
+ * ① Coordinate mismatch
+ *    Framer Motion's `drag` works in screen pixels. Our SVG uses viewBox units.
+ *    FIX: Abandon `motion.g drag` entirely. Use raw pointer events + `svgPoint()`
+ *    which uses `getScreenCTM().inverse()` to convert client coords → SVG units,
+ *    regardless of browser zoom, container size, or SVG scaling.
+ *
+ * ② Grab-offset jump
+ *    If you click the edge of a circle, the center should NOT snap to the cursor.
+ *    FIX: On `pointerdown`, record `grabOffset = cursorSVGPos − circleCenter`.
+ *    On every `pointermove`, the new center = `cursorSVGPos − grabOffset`.
+ *
+ * ③ State/render desync jump
+ *    Framer Motion's internal drag transform conflicts with React `animate` state.
+ *    FIX: Use a separate `drag` state for the currently-dragged element. During drag,
+ *    `getPos(id)` returns `drag.pos` (live) not `settled[id]` (stale). On `pointerup`,
+ *    we write the final position to `settled` and clear `drag`. React renders once
+ *    with the exact final position — there is no intermediate state to cause a jump.
+ *
+ * ④ Magnet snap (bonus)
+ *    Identity-paired circles glow and snap if released within SNAP_DIST SVG units.
+ */
+
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { CheckCircle, XCircle, RefreshCw, HelpCircle, Magnet, Info } from 'lucide-react';
+import type { EulerRule, EulerRelation } from '../../data/logic/raporturi-intre-termeni-euler';
 import { EULER_COLORS } from './EulerDiagram';
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+
+const W = 400;           // SVG viewBox width
+const H = 280;           // SVG viewBox height
+const SNAP_DIST = 32;    // SVG units — how close for magnetic snap
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Pt { x: number; y: number }
 
 interface BuilderTerm {
   id: string;
   label: string;
   color: string;
-  r: number;
-}
-
-interface TermState {
-  id: string;
-  x: number;
-  y: number;
-  r: number;
+  r: number;    // radius in SVG units
 }
 
 interface EulerBuilderProps {
@@ -25,260 +55,648 @@ interface EulerBuilderProps {
   onSuccess?: () => void;
 }
 
-export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBuilderProps) {
-  const WIDTH = 400;
-  const HEIGHT = 280;
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-  // Final positions in SVG units
-  const [placed, setPlaced] = useState<Record<string, { x: number, y: number, r: number }>>({});
-  const [feedback, setFeedback] = useState<{ status: 'idle' | 'success' | 'refused', message: string }>({ status: 'idle', message: '' });
-  const [showRules, setShowRules] = useState(false);
-  const [isSnapping, setIsSnapping] = useState<string | null>(null);
+/**
+ * Convert a client-space point (e.clientX/Y) to SVG viewBox coordinates.
+ * This is the ONLY correct way to go from pointer events to SVG units —
+ * it accounts for CSS scaling, browser zoom, device pixel ratio, and scroll.
+ */
+function svgPoint(svg: SVGSVGElement, clientX: number, clientY: number): Pt {
+  const pt = svg.createSVGPoint();
+  pt.x = clientX;
+  pt.y = clientY;
+  const ctm = svg.getScreenCTM();
+  if (!ctm) return { x: clientX, y: clientY }; // fallback (should never happen)
+  const converted = pt.matrixTransform(ctm.inverse());
+  return { x: converted.x, y: converted.y };
+}
+
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+
+/**
+ * Classify the geometric relationship between two circles from their positions.
+ * Returns one of the four Euler relation types.
+ */
+function detectRelation(
+  ax: number, ay: number, rA: number,
+  bx: number, by: number, rB: number,
+  tolerance = 8,
+): EulerRelation {
+  const d = Math.hypot(ax - bx, ay - by);
+  if (d < 12 && Math.abs(rA - rB) < 12) return 'identitate';
+  if (d + rA <= rB + tolerance) return 'subordonare';  // A ⊂ B
+  if (d + rB <= rA + tolerance) return 'subordonare';  // B ⊂ A
+  if (d >= rA + rB - tolerance) return 'contrarietate';
+  return 'incrucisare';
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBuilderProps) {
+
+  // ── Initial layout: spread terms evenly along the bottom of the canvas
+  const initPositions = (): Record<string, Pt> =>
+    Object.fromEntries(
+      terms.map((t, i) => [
+        t.id,
+        { x: (i + 1) * (W / (terms.length + 1)), y: H - 52 },
+      ])
+    );
+
+  // ── State ────────────────────────────────────────────────────────────────
+
+  /**
+   * `settled` = committed positions for ALL circles.
+   * Updated only on pointerup (never mid-drag).
+   */
+  const [settled, setSettled] = useState<Record<string, Pt>>(initPositions);
+
+  /**
+   * `drag` = the id + live position of the currently-dragged circle.
+   * While dragging, the dragged circle reads from `drag.pos`, not `settled`.
+   * This is the key to eliminating the render-desync jump.
+   */
+  const [drag, setDrag] = useState<{ id: string; pos: Pt } | null>(null);
+
+  /** Which circle is the identity snap target (shown with glow) */
+  const [snapTarget, setSnapTarget] = useState<string | null>(null);
+
+  const [feedback, setFeedback] = useState<{
+    type: 'idle' | 'ok' | 'err';
+    msg: string;
+  }>({ type: 'idle', msg: '' });
+
+  const [showHelp, setShowHelp] = useState(false);
+
+  // ── Refs ─────────────────────────────────────────────────────────────────
 
   const svgRef = useRef<SVGSVGElement>(null);
 
-  // Initial distribution
-  const getInitialPos = (id: string) => {
-    const idx = terms.findIndex(t => t.id === id);
-    return {
-      x: idx * 65 + 60,
-      y: HEIGHT - 45
-    };
-  };
+  /**
+   * grabOffset: the delta between where the user clicked (in SVG units)
+   * and the circle's center. Stored in a ref (not state) so it doesn't
+   * cause re-renders and is always current in event handlers.
+   */
+  const grabOffset = useRef<Pt>({ x: 0, y: 0 });
+
+  /**
+   * The identity-rule partner for the currently dragged term.
+   * Computed once on pointerdown, read on pointermove/up.
+   */
+  const identityPartnerId = useRef<string | null>(null);
+
+  // ── Derived ──────────────────────────────────────────────────────────────
+
+  /**
+   * The effective position of a circle — live during drag, settled otherwise.
+   * All rendering reads through this function.
+   */
+  const getPos = (id: string): Pt =>
+    drag?.id === id ? drag.pos : settled[id];
+
+  // ── Pointer handlers ─────────────────────────────────────────────────────
+
+  const handlePointerDown = useCallback(
+    (e: React.PointerEvent, id: string) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!svgRef.current) return;
+
+      // ✅ Fix ②: Capture the pointer so move/up fire even if cursor leaves element
+      (e.currentTarget as Element).setPointerCapture(e.pointerId);
+
+      // ✅ Fix ①: Convert client coords → SVG viewBox units
+      const cursorSVG = svgPoint(svgRef.current, e.clientX, e.clientY);
+      const center = settled[id];
+
+      // ✅ Fix ②: Store where WITHIN the circle the user clicked
+      grabOffset.current = {
+        x: cursorSVG.x - center.x,
+        y: cursorSVG.y - center.y,
+      };
+
+      // Pre-compute identity partner once
+      const rule = rules.find(
+        r => r.relation === 'identitate' && (r.a === id || r.b === id)
+      );
+      identityPartnerId.current = rule
+        ? (rule.a === id ? rule.b : rule.a)
+        : null;
+
+      // ✅ Fix ③: Begin drag state with the circle's current settled position.
+      // From now on, this circle renders from `drag.pos` not `settled`.
+      setDrag({ id, pos: center });
+      setFeedback({ type: 'idle', msg: '' });
+    },
+    [settled, rules]
+  );
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!drag || !svgRef.current) return;
+      e.preventDefault();
+
+      // ✅ Fix ①: Convert client coords → SVG viewBox units
+      const cursorSVG = svgPoint(svgRef.current, e.clientX, e.clientY);
+
+      // ✅ Fix ②: Subtract the grab offset so the circle center tracks the grab point
+      const newPos: Pt = {
+        x: clamp(cursorSVG.x - grabOffset.current.x, 0, W),
+        y: clamp(cursorSVG.y - grabOffset.current.y, 0, H),
+      };
+
+      // ✅ Fix ③: Update `drag.pos` — the dragged circle re-renders from this,
+      // never from `settled`. No conflict with committed state.
+      setDrag({ id: drag.id, pos: newPos });
+
+      // Magnetic snap detection
+      if (identityPartnerId.current) {
+        const pPos = settled[identityPartnerId.current];
+        const dist = Math.hypot(newPos.x - pPos.x, newPos.y - pPos.y);
+        const candidate = dist < SNAP_DIST ? identityPartnerId.current : null;
+        // Avoid unnecessary state updates that would cause extra renders
+        setSnapTarget(prev => (prev === candidate ? prev : candidate));
+      }
+    },
+    [drag, settled]
+  );
+
+  const handlePointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      if (!drag) return;
+
+      let finalPos = drag.pos;
+
+      // Apply magnetic snap if within range
+      if (identityPartnerId.current && snapTarget === identityPartnerId.current) {
+        finalPos = { ...settled[identityPartnerId.current] };
+      }
+
+      // ✅ Fix ③: Commit to settled state. React renders once with the exact
+      // final position. `drag` is cleared simultaneously so no intermediate
+      // state exists where the circle has no position source.
+      setSettled(prev => ({ ...prev, [drag.id]: finalPos }));
+      setDrag(null);
+      setSnapTarget(null);
+      identityPartnerId.current = null;
+    },
+    [drag, settled, snapTarget]
+  );
+
+  // ── Reset ─────────────────────────────────────────────────────────────────
 
   const handleReset = () => {
-    setPlaced({});
-    setFeedback({ status: 'idle', message: '' });
-    setIsSnapping(null);
+    setSettled(initPositions());
+    setDrag(null);
+    setSnapTarget(null);
+    setFeedback({ type: 'idle', msg: '' });
   };
 
-  const getRelation = (t1: TermState, t2: TermState): EulerRelation => {
-    const dx = t1.x - t2.x;
-    const dy = t1.y - t2.y;
-    const d = Math.sqrt(dx * dx + dy * dy);
-    
-    // Snapping / Identity threshold
-    if (d < 15 && Math.abs(t1.r - t2.r) < 15) return 'identitate';
-    if (d + t1.r < t2.r + 5) return 'subordonare'; // T1 inside T2
-    if (d + t2.r < t1.r + 5) return 'subordonare'; // T2 inside T1
-    if (d > t1.r + t2.r - 5) return 'contrarietate';
-    return 'incrucisare';
-  };
+  // ── Verification ──────────────────────────────────────────────────────────
 
   const verify = () => {
-    if (Object.keys(placed).length < terms.length) {
-      setFeedback({ status: 'refused', message: 'Te rog să plasezi toți termenii pe diagramă.' });
-      return;
-    }
-
     const errors: string[] = [];
-    rules.forEach(rule => {
-      const tA = { id: rule.a, ...placed[rule.a] };
-      const tB = { id: rule.b, ...placed[rule.b] };
-      const realRel = getRelation(tA, tB);
-      
-      if (rule.relation === 'identitate') {
-        if (realRel !== 'identitate') errors.push(`A și B trebuie să fie identici (complet suprapuși).`);
-      } else if (rule.relation === 'subordonare') {
-        const dx = tA.x - tB.x;
-        const dy = tA.y - tB.y;
-        const d = Math.sqrt(dx * dx + dy * dy);
-        // rule.a is species of rule.b
-        if (d + tA.r > tB.r + 8) errors.push(`Termenul ${rule.a} trebuie să fie o specie a termenului ${rule.b} (complet inclus).`);
-      } else if (rule.relation === 'incrucisare') {
-        if (realRel !== 'incrucisare') errors.push(`${rule.a} și ${rule.b} trebuie să se intersecteze parțial.`);
-      } else if (rule.relation === 'contrarietate') {
-        if (realRel !== 'contrarietate') errors.push(`${rule.a} și ${rule.b} trebuie să fie complet separați.`);
+
+    for (const rule of rules) {
+      const posA = getPos(rule.a);
+      const posB = getPos(rule.b);
+      if (!posA || !posB) { errors.push('Plasează toți termenii pe diagramă.'); break; }
+
+      const rA = terms.find(t => t.id === rule.a)!.r;
+      const rB = terms.find(t => t.id === rule.b)!.r;
+      const d = Math.hypot(posA.x - posB.x, posA.y - posB.y);
+
+      switch (rule.relation) {
+        case 'identitate':
+          if (d >= 14)
+            errors.push(`${rule.a} și ${rule.b} trebuie să fie suprapuși complet (identitate ≡).`);
+          break;
+
+        case 'subordonare': {
+          // rule.a is the species → must be fully inside rule.b
+          const inner = rA, outer = rB;
+          if (d + inner > outer + 10)
+            errors.push(`${rule.a} trebuie să fie complet în interiorul lui ${rule.b} (subordonare ⊂).`);
+          break;
+        }
+
+        case 'incrucisare': {
+          const rel = detectRelation(posA.x, posA.y, rA, posB.x, posB.y, rB);
+          if (rel !== 'incrucisare')
+            errors.push(`${rule.a} și ${rule.b} trebuie să se intersecteze parțial (încrucișare ∩).`);
+          break;
+        }
+
+        case 'contrarietate':
+          if (d <= rA + rB - 6)
+            errors.push(`${rule.a} și ${rule.b} trebuie să fie complet separați (contrarietate ⊥).`);
+          break;
       }
-    });
+    }
 
     if (errors.length === 0) {
-      setFeedback({ status: 'success', message: 'Excelent! Reprezentarea ta respectă toate condițiile logice.' });
-      if (onSuccess) onSuccess();
+      setFeedback({ type: 'ok', msg: 'Excelent! Reprezentarea ta respectă toate condițiile logice.' });
+      onSuccess?.();
     } else {
-      setFeedback({ status: 'refused', message: errors[0] });
+      setFeedback({ type: 'err', msg: errors[0] });
     }
   };
 
-  // Helper to convert screen coordinates to SVG units
-  const screenToSVG = (x: number, y: number) => {
-    if (!svgRef.current) return { x, y };
-    const svg = svgRef.current;
-    const CTM = svg.getScreenCTM();
-    if (!CTM) return { x, y };
-    const pt = svg.createSVGPoint();
-    pt.x = x;
-    pt.y = y;
-    const svgPt = pt.matrixTransform(CTM.inverse());
-    return { x: svgPt.x, y: svgPt.y };
-  };
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{
-      background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 20,
-      overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 12px 48px rgba(0,0,0,0.3)'
-    }}>
-      {/* Top Banner */}
-      <div style={{ padding: '24px 28px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.01)' }}>
+    <div
+      style={{
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
+        borderRadius: 20,
+        overflow: 'hidden',
+        boxShadow: '0 12px 48px rgba(0,0,0,0.35)',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* ── Header ── */}
+      <div
+        style={{
+          padding: '22px 28px',
+          borderBottom: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: 'rgba(255,255,255,0.01)',
+          gap: 12,
+        }}
+      >
         <div>
-           <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--logic)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: 6, fontWeight: 600 }}>BacPrep Logic Lab</div>
-           <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>{title || 'Constructor Diagrame Euler'}</div>
+          <div
+            style={{
+              fontSize: 10,
+              fontFamily: 'var(--font-mono)',
+              color: 'var(--logic)',
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
+              marginBottom: 5,
+              fontWeight: 700,
+            }}
+          >
+            BacPrep · Logic Lab
+          </div>
+          <div
+            style={{
+              fontSize: 18,
+              fontWeight: 800,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            {title || 'Constructor Diagrame Euler'}
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={() => handleReset()} style={{ padding: '8px 12px', borderRadius: 10, background: 'var(--bg-muted)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 500 }}>
-             <RefreshCw size={14} /> Resetează
+
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            onClick={handleReset}
+            style={{
+              padding: '7px 14px',
+              borderRadius: 10,
+              background: 'var(--bg-muted)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-muted)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontSize: 12,
+              fontWeight: 500,
+              fontFamily: 'var(--font-mono)',
+              letterSpacing: '0.04em',
+            }}
+          >
+            <RefreshCw size={13} />
+            Resetează
           </button>
-          <button onClick={() => setShowRules(!showRules)} style={{ padding: 8, borderRadius: 10, background: 'var(--bg-muted)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}>
-            <HelpCircle size={18} />
+          <button
+            onClick={() => setShowHelp(h => !h)}
+            style={{
+              padding: 8,
+              borderRadius: 10,
+              background: showHelp ? 'var(--logic-dim)' : 'var(--bg-muted)',
+              border: `1px solid ${showHelp ? 'var(--logic-border)' : 'var(--border)'}`,
+              color: showHelp ? 'var(--logic)' : 'var(--text-muted)',
+              cursor: 'pointer',
+              display: 'grid',
+              placeItems: 'center',
+              transition: 'all 0.15s',
+            }}
+            title="Afișează cerințele"
+          >
+            <HelpCircle size={17} />
           </button>
         </div>
       </div>
 
-      {/* Main Interaction Area */}
-      <div style={{ position: 'relative', background: '#08080a' }}>
+      {/* ── SVG Canvas ── */}
+      <div style={{ position: 'relative', background: '#07070a', flexShrink: 0 }}>
         <svg
           ref={svgRef}
-          viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-          style={{ width: '100%', height: 'auto', display: 'block', touchAction: 'none' }}
+          viewBox={`0 0 ${W} ${H}`}
+          style={{
+            width: '100%',
+            height: 'auto',
+            display: 'block',
+            // IMPORTANT: disable browser touch gestures so our pointer events fire
+            touchAction: 'none',
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+          }}
+          // Move/Up handlers on the SVG so they fire even when pointer
+          // moves between circles (pointer capture handles the rest)
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          // Cancel drag if pointer somehow leaves the SVG entirely
+          onPointerLeave={handlePointerUp}
         >
+          {/* Background texture */}
           <defs>
-            <radialGradient id="grad-center" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="rgba(99,102,241,0.05)" />
+            <pattern id="eb-grid" width="24" height="24" patternUnits="userSpaceOnUse">
+              <circle cx="1.5" cy="1.5" r="1.5" fill="rgba(255,255,255,0.035)" />
+            </pattern>
+            <radialGradient id="eb-center" cx="50%" cy="50%" r="60%">
+              <stop offset="0%" stopColor="rgba(99,102,241,0.04)" />
               <stop offset="100%" stopColor="transparent" />
             </radialGradient>
-            <pattern id="dot-pattern" width="25" height="25" patternUnits="userSpaceOnUse">
-              <circle cx="1.5" cy="1.5" r="1.5" fill="rgba(255,255,255,0.04)" />
-            </pattern>
+            <filter id="eb-shadow">
+              <feDropShadow dx="0" dy="4" stdDeviation="8" floodOpacity="0.5" />
+            </filter>
           </defs>
-          <rect width={WIDTH} height={HEIGHT} fill="url(#dot-pattern)" />
-          <rect width={WIDTH} height={HEIGHT} fill="url(#grad-center)" />
 
-          {/* Circles */}
-          {terms.map((t, idx) => {
-            const colors = EULER_COLORS[t.id as keyof typeof EULER_COLORS] || EULER_COLORS.A;
-            const current = placed[t.id] || getInitialPos(t.id);
-            const isIdentityPartner = rules.find(r => r.relation === 'identitate' && (r.a === t.id || r.b === t.id));
+          <rect width={W} height={H} fill="url(#eb-grid)" />
+          <rect width={W} height={H} fill="url(#eb-center)" />
+
+          {/* Render all circles */}
+          {terms.map(term => {
+            const pos = getPos(term.id);
+            const colors = EULER_COLORS[term.id as keyof typeof EULER_COLORS] ?? EULER_COLORS.A;
+            const isDragging = drag?.id === term.id;
+            const isSnapping = isDragging && snapTarget !== null;
+            const isSnapTarget = snapTarget === term.id && !isDragging;
 
             return (
-              <motion.g
-                key={t.id}
-                drag
-                dragMomentum={false}
-                dragElastic={0}
-                layoutId={t.id}
-                onDragStart={() => {
-                   setFeedback({ status: 'idle', message: '' });
-                }}
-                onDrag={(e, info) => {
-                   // Check for identity snapping candidate in real-time
-                   if (isIdentityPartner) {
-                      const partnerId = isIdentityPartner.a === t.id ? isIdentityPartner.b : isIdentityPartner.a;
-                      const partner = placed[partnerId];
-                      if (partner) {
-                         const currentPt = screenToSVG(info.point.x, info.point.y);
-                         const d = Math.sqrt(Math.pow(currentPt.x - partner.x, 2) + Math.pow(currentPt.y - partner.y, 2));
-                         if (d < 30) setIsSnapping(t.id);
-                         else setIsSnapping(null);
-                      }
-                   }
-                }}
-                onDragEnd={(e, info) => {
-                   const svgPos = screenToSVG(info.point.x, info.point.y);
-                   let finalX = svgPos.x;
-                   let finalY = svgPos.y;
-
-                   // Magnet Logic: If near identity partner, snap to it
-                   if (isIdentityPartner) {
-                      const partnerId = isIdentityPartner.a === t.id ? isIdentityPartner.b : isIdentityPartner.a;
-                      const partner = placed[partnerId];
-                      if (partner) {
-                         const d = Math.sqrt(Math.pow(finalX - partner.x, 2) + Math.pow(finalY - partner.y, 2));
-                         if (d < 30) {
-                            finalX = partner.x;
-                            finalY = partner.y;
-                         }
-                      }
-                   }
-
-                   setIsSnapping(null);
-                   setPlaced(prev => ({
-                     ...prev,
-                     [t.id]: { x: finalX, y: finalY, r: t.r }
-                   }));
-                }}
-                animate={{ x: current.x, y: current.y }}
-                transition={{ type: 'spring', damping: 22, stiffness: 220 }}
-                style={{ cursor: 'grab', zIndex: isSnapping === t.id ? 100 : 10 }}
+              <g
+                key={term.id}
+                // The transform is always the live position from getPos().
+                // No Framer Motion drag prop → no coordinate system conflict.
+                transform={`translate(${pos.x},${pos.y})`}
+                onPointerDown={e => handlePointerDown(e, term.id)}
+                style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
               >
-                {/* Glow during snap */}
-                {isSnapping === t.id && (
-                  <circle r={t.r + 10} fill={colors.stroke} opacity={0.2}>
-                    <animate attributeName="r" values={`${t.r + 5};${t.r + 12};${t.r + 5}`} dur="1.5s" repeatCount="indefinite" />
+                {/* Magnetic snap glow ring — animated with SVG SMIL */}
+                {(isSnapping || isSnapTarget) && (
+                  <circle
+                    r={term.r + 8}
+                    fill="none"
+                    stroke={colors.stroke}
+                    strokeWidth="1.5"
+                    opacity="0.4"
+                  >
+                    <animate
+                      attributeName="r"
+                      values={`${term.r + 4};${term.r + 14};${term.r + 4}`}
+                      dur="1.1s"
+                      repeatCount="indefinite"
+                    />
+                    <animate
+                      attributeName="opacity"
+                      values="0.5;0.1;0.5"
+                      dur="1.1s"
+                      repeatCount="indefinite"
+                    />
                   </circle>
                 )}
-                
-                <circle
-                  r={t.r}
-                  fill={colors.fill}
-                  stroke={isSnapping === t.id ? 'white' : colors.stroke}
-                  strokeWidth={isSnapping === t.id ? 3 : 2.5}
-                  style={{ backdropFilter: 'blur(3px)' }}
-                />
-                
-                <circle r={14} cy={-t.r + 4} fill={colors.stroke} />
-                <text y={-t.r + 8.5} textAnchor="middle" fill="white" fontSize="13" fontWeight="900" fontFamily="var(--font-mono)">
-                  {t.id}
-                </text>
 
-                {/* Identity symbol if snapped */}
-                {Object.keys(placed).some(pid => pid !== t.id && placed[pid]?.x === current.x && placed[pid]?.y === current.y && pid === isIdentityPartner?.a) && (
-                   <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                     <circle r={10} cx={t.r - 8} cy={-t.r + 8} fill="var(--green)" />
-                     <path d={`M ${t.r-12} ${-t.r+8} L ${t.r-4} ${-t.r+8} M ${t.r-12} ${-t.r+11} L ${t.r-4} ${-t.r+11}`} stroke="white" strokeWidth="2" />
-                   </motion.g>
+                {/* Lift shadow when dragging */}
+                {isDragging && (
+                  <circle
+                    r={term.r}
+                    fill="rgba(0,0,0,0.4)"
+                    transform="translate(0, 6)"
+                    style={{ filter: 'blur(6px)' }}
+                  />
                 )}
-              </motion.g>
+
+                {/* Main circle body */}
+                <circle
+                  r={term.r}
+                  fill={colors.fill}
+                  stroke={
+                    isSnapping || isSnapTarget
+                      ? 'rgba(255,255,255,0.65)'
+                      : isDragging
+                      ? colors.stroke
+                      : colors.stroke
+                  }
+                  strokeWidth={isSnapping || isSnapTarget || isDragging ? 2.5 : 2}
+                  opacity={isDragging ? 0.95 : 1}
+                />
+
+                {/* Letter badge — pinned to top of circle */}
+                <circle
+                  r={13}
+                  cy={-term.r + 4}
+                  fill={colors.stroke}
+                />
+                <text
+                  textAnchor="middle"
+                  y={-term.r + 9}
+                  fontSize="12"
+                  fontWeight="900"
+                  fontFamily="var(--font-mono)"
+                  fill="white"
+                  style={{ pointerEvents: 'none', userSelect: 'none' }}
+                >
+                  {term.id}
+                </text>
+              </g>
             );
           })}
         </svg>
 
-        {/* Requirements Overlay */}
+        {/* ── Help overlay ── */}
         <AnimatePresence>
-          {showRules && (
-            <motion.div 
-              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-              style={{ position: 'absolute', top: 20, right: 20, width: 240, background: 'rgba(15,15,20,0.95)', border: '1px solid var(--border)', borderRadius: 16, padding: 20, zIndex: 200, backdropFilter: 'blur(12px)' }}
+          {showHelp && (
+            <motion.div
+              initial={{ opacity: 0, x: 12 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 12 }}
+              transition={{ duration: 0.18 }}
+              style={{
+                position: 'absolute',
+                top: 14,
+                right: 14,
+                width: 224,
+                background: 'rgba(9,9,12,0.97)',
+                border: '1px solid var(--border)',
+                borderRadius: 14,
+                padding: '16px 18px',
+                backdropFilter: 'blur(14px)',
+                zIndex: 20,
+              }}
             >
-               <h4 style={{ margin: '0 0 12px', fontSize: 13, color: 'var(--logic)', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <Info size={14} /> Cerințe Exercițiu
-               </h4>
-               <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                 {rules.map((rule, i) => (
-                    <li key={i} style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                       <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{rule.a}</span> 
-                       {' '}{rule.relation === 'identitate' ? 'este identic cu' : rule.relation === 'subordonare' ? 'este specie a' : rule.relation === 'incrucisare' ? 'se intersectează cu' : 'este separat de'}{' '}
-                       <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{rule.b}</span>
-                    </li>
-                 ))}
-               </ul>
+              <div
+                style={{
+                  fontSize: 10,
+                  fontFamily: 'var(--font-mono)',
+                  color: 'var(--logic)',
+                  letterSpacing: '0.12em',
+                  textTransform: 'uppercase',
+                  fontWeight: 700,
+                  marginBottom: 12,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 6,
+                }}
+              >
+                <Info size={12} />
+                Cerințe
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+                {rules.map((r, i) => (
+                  <div
+                    key={i}
+                    style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}
+                  >
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontWeight: 800,
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      {r.a}
+                    </span>{' '}
+                    <span style={{ color: 'var(--logic)', fontWeight: 600 }}>
+                      {r.relation === 'identitate'
+                        ? '≡'
+                        : r.relation === 'subordonare'
+                        ? '⊂'
+                        : r.relation === 'incrucisare'
+                        ? '∩'
+                        : '⊥'}
+                    </span>{' '}
+                    <span
+                      style={{
+                        fontFamily: 'var(--font-mono)',
+                        fontWeight: 800,
+                        color: 'var(--text-primary)',
+                      }}
+                    >
+                      {r.b}
+                    </span>{' '}
+                    <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
+                      (
+                      {r.relation === 'identitate'
+                        ? 'identitate'
+                        : r.relation === 'subordonare'
+                        ? 'subordonare'
+                        : r.relation === 'incrucisare'
+                        ? 'încrucișare'
+                        : 'contrarietate'}
+                      )
+                    </span>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Persistence Bar */}
-      <div style={{ padding: '24px 28px', borderTop: '1px solid var(--border)', background: 'rgba(255,255,255,0.01)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1 }}>
-          <div style={{ width: 44, height: 44, borderRadius: 12, background: feedback.status === 'success' ? 'rgba(34,197,94,0.1)' : feedback.status === 'refused' ? 'rgba(239,68,68,0.1)' : 'var(--bg-muted)', display: 'grid', placeItems: 'center', flexShrink: 0 }}>
-             {feedback.status === 'success' ? <CheckCircle size={22} color="var(--green)" /> : feedback.status === 'refused' ? <XCircle size={22} color="var(--accent)" /> : <Magnet size={20} color="var(--text-muted)" />}
+      {/* ── Footer ── */}
+      <div
+        style={{
+          padding: '18px 28px',
+          borderTop: '1px solid var(--border)',
+          background: 'rgba(255,255,255,0.01)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 18,
+          flexWrap: 'wrap',
+        }}
+      >
+        {/* Status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              flexShrink: 0,
+              display: 'grid',
+              placeItems: 'center',
+              background:
+                feedback.type === 'ok'
+                  ? 'rgba(52,211,153,0.1)'
+                  : feedback.type === 'err'
+                  ? 'rgba(192,57,43,0.1)'
+                  : 'var(--bg-muted)',
+              transition: 'background 0.2s',
+            }}
+          >
+            {feedback.type === 'ok' ? (
+              <CheckCircle size={20} color="var(--green)" />
+            ) : feedback.type === 'err' ? (
+              <XCircle size={20} color="var(--accent)" />
+            ) : (
+              <Magnet size={18} color="var(--text-muted)" />
+            )}
           </div>
-          <p style={{ fontSize: 14, fontWeight: 500, color: feedback.status === 'success' ? 'var(--green)' : feedback.status === 'refused' ? 'var(--accent)' : 'var(--text-muted)', margin: 0 }}>
-            {feedback.message || 'Sfat: Atunci când doi termeni sunt identici, aceștia se vor „magnetiza” automat dacă îi apropii.'}
+          <p
+            style={{
+              fontSize: 13,
+              margin: 0,
+              fontWeight: 500,
+              lineHeight: 1.5,
+              color:
+                feedback.type === 'ok'
+                  ? 'var(--green)'
+                  : feedback.type === 'err'
+                  ? 'var(--accent)'
+                  : 'var(--text-muted)',
+            }}
+          >
+            {feedback.msg ||
+              'Sfat: A și B sunt identici — apropie-i și se magnetizează automat.'}
           </p>
         </div>
-        
-        <button onClick={verify} style={{ height: 48, padding: '0 32px', background: 'linear-gradient(135deg, var(--logic) 0%, var(--logic-light) 100%)', border: 'none', borderRadius: 14, color: 'white', fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: '0 6px 16px rgba(79,70,229,0.3)', transition: 'transform 0.2s' }}>
-           Verifică Rezolvarea
+
+        {/* Verify button */}
+        <button
+          onClick={verify}
+          style={{
+            height: 46,
+            padding: '0 30px',
+            background:
+              'linear-gradient(135deg, var(--logic) 0%, var(--logic-light) 100%)',
+            border: 'none',
+            borderRadius: 12,
+            color: 'white',
+            fontWeight: 700,
+            fontSize: 13,
+            cursor: 'pointer',
+            flexShrink: 0,
+            boxShadow: '0 4px 14px rgba(79,70,229,0.35)',
+            letterSpacing: '-0.01em',
+            transition: 'opacity 0.15s, transform 0.15s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.97)')}
+          onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
+        >
+          Verifică rezolvarea
         </button>
       </div>
     </div>
