@@ -25,7 +25,7 @@
  *    Identity-paired circles glow and snap if released within SNAP_DIST SVG units.
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CheckCircle, XCircle, RefreshCw, HelpCircle, Magnet, Info } from 'lucide-react';
 import type { EulerRule, EulerRelation } from '../../data/logic/raporturi-intre-termeni-euler';
@@ -52,6 +52,7 @@ interface EulerBuilderProps {
   terms: BuilderTerm[];
   rules: EulerRule[];
   title?: string;
+  statement?: React.ReactNode;
   onSuccess?: () => void;
 }
 
@@ -93,7 +94,7 @@ function detectRelation(
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBuilderProps) {
+export default function EulerBuilder({ terms, rules, title, statement, onSuccess }: EulerBuilderProps) {
 
   // ── Initial layout: spread terms evenly along the bottom of the canvas
   const initPositions = (): Record<string, Pt> =>
@@ -268,30 +269,32 @@ export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBu
       const d = Math.hypot(posA.x - posB.x, posA.y - posB.y);
 
       switch (rule.relation) {
-        case 'identitate':
-          if (d >= 14)
-            errors.push(`${rule.a} și ${rule.b} trebuie să fie suprapuși complet (identitate ≡).`);
-          break;
+    case 'identitate':
+      if (d >= 14)
+        errors.push(`${rule.a} și ${rule.b} trebuie să fie suprapuși complet (identitate ≡).`);
+      break;
 
-        case 'subordonare': {
-          // rule.a is the species → must be fully inside rule.b
-          const inner = rA, outer = rB;
-          if (d + inner > outer + 10)
-            errors.push(`${rule.a} trebuie să fie complet în interiorul lui ${rule.b} (subordonare ⊂).`);
-          break;
-        }
+    case 'subordonare': {
+      // rule.a is the species → must be fully inside rule.b
+      const inner = rA, outer = rB;
+      if (d + inner > outer + 10)
+        errors.push(`${rule.a} trebuie să fie complet în interiorul lui ${rule.b} (subordonare ⊂).`);
+      break;
+    }
 
-        case 'incrucisare': {
-          const rel = detectRelation(posA.x, posA.y, rA, posB.x, posB.y, rB);
-          if (rel !== 'incrucisare')
-            errors.push(`${rule.a} și ${rule.b} trebuie să se intersecteze parțial (încrucișare ∩).`);
-          break;
-        }
+    case 'incrucisare': {
+      const rel = detectRelation(posA.x, posA.y, rA, posB.x, posB.y, rB);
+      if (rel !== 'incrucisare')
+        errors.push(`${rule.a} și ${rule.b} trebuie să se intersecteze parțial (încrucișare ∩).`);
+      break;
+    }
 
-        case 'contrarietate':
-          if (d <= rA + rB - 6)
-            errors.push(`${rule.a} și ${rule.b} trebuie să fie complet separați (contrarietate ⊥).`);
-          break;
+    case 'contrarietate':
+    case 'contradictie':
+    case 'opozitie':
+      if (d <= rA + rB - 6)
+        errors.push(`${rule.a} și ${rule.b} trebuie să fie complet separați (raport de ${rule.relation}).`);
+      break;
       }
     }
 
@@ -396,6 +399,20 @@ export default function EulerBuilder({ terms, rules, title, onSuccess }: EulerBu
           </button>
         </div>
       </div>
+
+      {/* ── Statement ── */}
+      {statement && (
+        <div style={{
+          padding: '16px 28px',
+          background: 'rgba(99,102,241,0.03)',
+          borderBottom: '1px solid var(--border)',
+          fontSize: 14,
+          color: 'var(--text-secondary)',
+          lineHeight: 1.6,
+        }}>
+          {statement}
+        </div>
+      )}
 
       {/* ── SVG Canvas ── */}
       <div style={{ position: 'relative', background: '#07070a', flexShrink: 0 }}>

@@ -9,7 +9,7 @@ import EulerDiagram from '../components/logic/EulerDiagram';
 import RelationCard from '../components/logic/RelationCard';
 import EulerBuilder from '../components/logic/EulerBuilder';
 import PropositionEvaluator from '../components/logic/PropositionEvaluator';
-import { EULER_TERMS, PROPOSITIONS, RELATION_CARDS, EULER_RULES } from '../data/logic/raporturi-intre-termeni-euler';
+import { EULER_EXERCISES, RELATION_CARDS } from '../data/logic/raporturi-intre-termeni-euler';
 import { EULER_COLORS } from '../components/logic/EulerDiagram';
 import { useScrollProgress } from '../hooks/useScrollProgress';
 
@@ -17,6 +17,9 @@ export default function LogicExercise() {
   const { id } = useParams();
   const meta = logicExercises.find(e => e.id === id);
   const scroll = useScrollProgress();
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  const currentExercise = EULER_EXERCISES[currentIdx];
 
   if (!meta) {
     return (
@@ -78,7 +81,7 @@ export default function LogicExercise() {
               fontSize: 12, color: 'var(--text-muted)',
               display: 'flex', alignItems: 'center', gap: 4,
             }}>
-              <HelpCircle size={13} /> {PROPOSITIONS.length} propoziții
+              <HelpCircle size={13} /> {currentExercise.propositions.length} propoziții
             </span>
           </div>
         </div>
@@ -118,49 +121,91 @@ export default function LogicExercise() {
         {/* Content */}
         <div style={{ paddingTop: 48, display: 'flex', flexDirection: 'column', gap: 64 }}>
 
-          {/* Section 1: The exercise problem */}
-          <ExerciseSection index={0} title="Enunțul exercițiului">
-            <div style={{
-              padding: '20px 24px',
-              background: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              borderLeft: '3px solid var(--logic)',
-              borderRadius: '0 10px 10px 0',
-            }}>
-              <p style={{ fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 14px', lineHeight: 1.8 }}>
-                <strong style={{ color: 'var(--text-primary)' }}>B.</strong>{' '}
-                Se dau termenii <Term>A</Term>, <Term>B</Term>, <Term>C</Term>, <Term>D</Term> și <Term>E</Term> astfel încât:
-              </p>
-              <ul style={{ margin: 0, paddingLeft: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <li style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  Termenii <Term>A</Term> și <Term>B</Term> se află în <Rel>raport de identitate</Rel>
-                </li>
-                <li style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  Termenul <Term>C</Term> este o <Rel>specie</Rel> a termenului <Term>A</Term>
-                </li>
-                <li style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  Termenul <Term>D</Term> este specie a termenului <Term>B</Term>, aflată în <Rel>raport de încrucișare</Rel> cu <Term>C</Term>
-                </li>
-                <li style={{ fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.7 }}>
-                  Termenul <Term>E</Term> se află în <Rel>raport de încrucișare</Rel> cu <Term>A</Term> și de <Rel>contrarietate</Rel> cu termenii <Term>C</Term> și <Term>D</Term>
-                </li>
-              </ul>
-              <div style={{
-                marginTop: 20, padding: '12px 16px',
-                background: 'var(--bg-muted)', borderRadius: 8,
-                display: 'flex', gap: 10, alignItems: 'flex-start',
-              }}>
-                <Info size={14} style={{ color: 'var(--logic)', flexShrink: 0, marginTop: 1 }} />
-                <div>
-                  <div style={{ fontSize: 13, color: 'var(--text-primary)', fontWeight: 500, marginBottom: 4 }}>Cerințe:</div>
-                  <div style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
-                    1. Reprezentați <strong>diagrama Euler comună</strong> pentru cei cinci termeni. (2 puncte)<br />
-                    2. Stabiliți care propoziții sunt <strong>adevărate (A)</strong> și care sunt <strong>false (F)</strong>.
-                  </div>
-                </div>
-              </div>
+          {/* Section 1: Navigation & Quick Info */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              padding: '12px 20px',
+              background: 'var(--bg-muted)',
+              borderRadius: 12,
+              border: '1px solid var(--border)'
+            }}
+          >
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+              Alege varianta:
             </div>
-          </ExerciseSection>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+              {EULER_EXERCISES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentIdx(i)}
+                  style={{
+                    width: 32, height: 32, borderRadius: 6,
+                    display: 'grid', placeItems: 'center',
+                    fontSize: 13, fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s ease',
+                    border: '1px solid',
+                    background: currentIdx === i ? 'var(--logic)' : 'var(--bg-card)',
+                    color: currentIdx === i ? 'white' : 'var(--text-secondary)',
+                    borderColor: currentIdx === i ? 'var(--logic)' : 'var(--border)',
+                  }}
+                  onMouseEnter={e => {
+                    if (currentIdx !== i) {
+                      e.currentTarget.style.borderColor = 'var(--logic-border)';
+                      e.currentTarget.style.color = 'var(--logic)';
+                    }
+                  }}
+                  onMouseLeave={e => {
+                    if (currentIdx !== i) {
+                      e.currentTarget.style.borderColor = 'var(--border)';
+                      e.currentTarget.style.color = 'var(--text-secondary)';
+                    }
+                  }}
+                >
+                  {i + 1}
+                </button>
+              ))}
+            </div>
+            <div style={{ display: 'flex', gap: 8, marginLeft: 'auto' }}>
+              <button 
+                onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
+                disabled={currentIdx === 0}
+                style={{ 
+                  padding: '6px 12px', 
+                  borderRadius: 8, 
+                  border: '1px solid var(--border)',
+                  background: currentIdx === 0 ? 'transparent' : 'var(--bg-card)',
+                  color: currentIdx === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
+                  fontSize: 13,
+                  cursor: currentIdx === 0 ? 'default' : 'pointer',
+                  opacity: currentIdx === 0 ? 0.5 : 1
+                }}
+              >
+                Anterior
+              </button>
+              <button 
+                onClick={() => setCurrentIdx(Math.min(EULER_EXERCISES.length - 1, currentIdx + 1))}
+                disabled={currentIdx === EULER_EXERCISES.length - 1}
+                style={{ 
+                  padding: '6px 12px', 
+                  borderRadius: 8, 
+                  border: '1px solid var(--border)',
+                  background: currentIdx === EULER_EXERCISES.length - 1 ? 'transparent' : 'var(--bg-card)',
+                  color: currentIdx === EULER_EXERCISES.length - 1 ? 'var(--text-muted)' : 'var(--text-primary)',
+                  fontSize: 13,
+                  cursor: currentIdx === EULER_EXERCISES.length - 1 ? 'default' : 'pointer',
+                  opacity: currentIdx === EULER_EXERCISES.length - 1 ? 0.5 : 1
+                }}
+              >
+                Următor
+              </button>
+            </div>
+          </motion.div>
 
           {/* Section 2: Theory recap */}
           <ExerciseSection index={1} title="Teoria raporturilor între termeni">
@@ -190,44 +235,31 @@ export default function LogicExercise() {
               <StepCard step={1} title="Stabilim structura din enunț">
                 <p>Din enunț extragem toate relațiile:</p>
                 <ul style={{ margin: '8px 0', paddingLeft: 18, fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.9 }}>
-                  <li><code style={{ color: 'var(--logic)' }}>A = B</code> — identitate: același cerc</li>
-                  <li><code style={{ color: 'var(--logic)' }}>C ⊂ A</code> — C este interior lui A</li>
-                  <li><code style={{ color: 'var(--logic)' }}>D ⊂ B</code> și <code style={{ color: 'var(--logic)' }}>D ∩ C ≠ ∅</code> — D e în A, se suprapune cu C</li>
-                  <li><code style={{ color: 'var(--logic)' }}>E ∩ A ≠ ∅</code>, <code style={{ color: 'var(--logic)' }}>E ∩ C = ∅</code>, <code style={{ color: 'var(--logic)' }}>E ∩ D = ∅</code> — E depășește A, separat de C și D</li>
+                  {currentExercise.solutionSteps.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
                 </ul>
               </StepCard>
 
               <StepCard step={2} title="Construiește diagrama Euler">
                 <p style={{ marginBottom: 20 }}>
                   Trage termenii din partea de jos în spațiul diagramei pentru a reprezenta raporturile corect. 
-                  <strong> A și B</strong> sunt identice, <strong>C și D</strong> sunt în interior, iar <strong>E</strong> este la margine.
                 </p>
                 <div style={{ marginTop: 16 }}>
                   <EulerBuilder 
-                    title="Diagramă Interactivă — Rezolvă exercițiul"
-                    terms={[
-                      { id: 'A', label: 'Termenul A', color: EULER_COLORS.A.stroke, r: 75 },
-                      { id: 'B', label: 'Termenul B', color: EULER_COLORS.B.stroke, r: 75 },
-                      { id: 'C', label: 'Termenul C', color: EULER_COLORS.C.stroke, r: 35 },
-                      { id: 'D', label: 'Termenul D', color: EULER_COLORS.D.stroke, r: 35 },
-                      { id: 'E', label: 'Termenul E', color: EULER_COLORS.E.stroke, r: 40 },
-                    ]}
-                    rules={EULER_RULES}
+                    key={`builder-${currentIdx}`}
+                    title={currentExercise.title}
+                    statement={currentExercise.statement}
+                    terms={currentExercise.terms.map(t => ({
+                      ...t,
+                      color: EULER_COLORS[t.id as keyof typeof EULER_COLORS]?.stroke || '#fff'
+                    }))}
+                    rules={currentExercise.rules}
                   />
-                </div>
-                <div style={{ marginTop: 24, padding: '12px 16px', background: 'var(--bg-muted)', borderRadius: 8, fontSize: 13 }}>
-                  <span style={{ color: 'var(--text-muted)' }}>Sfat: Pentru <strong>identitate</strong>, pune cercurile A și B exact unul peste celălalt.</span>
                 </div>
               </StepCard>
 
-              <StepCard step={3} title="Deducem relațiile implicite">
-                <p>Din relațiile date putem deduce:</p>
-                <ul style={{ margin: '8px 0', paddingLeft: 18, fontSize: 14, color: 'var(--text-secondary)', lineHeight: 1.9 }}>
-                  <li>Deoarece <code style={{ color: 'var(--logic)' }}>A = B</code> și <code style={{ color: 'var(--logic)' }}>C ⊂ A</code> → <code style={{ color: 'var(--logic)' }}>C ⊂ B</code></li>
-                  <li>Deoarece <code style={{ color: 'var(--logic)' }}>A = B</code> și <code style={{ color: 'var(--logic)' }}>D ⊂ B</code> → <code style={{ color: 'var(--logic)' }}>D ⊂ A</code></li>
-                  <li>E se încrucișează cu A, dar este separat de C și D</li>
-                </ul>
-              </StepCard>
+
             </div>
           </ExerciseSection>
 
@@ -237,7 +269,8 @@ export default function LogicExercise() {
               Pe baza diagramei de mai sus, marchează fiecare propoziție ca <strong>A</strong> (adevărată) sau <strong>F</strong> (falsă), exact ca la examen. Apasă pe iconiță după corectare pentru a vedea explicația.
             </p>
             <PropositionEvaluator
-              propositions={PROPOSITIONS}
+              key={`evaluator-${currentIdx}`}
+              propositions={currentExercise.propositions}
               title="Stabiliți care propoziții sunt adevărate (A) și care sunt false (F)"
             />
           </ExerciseSection>
