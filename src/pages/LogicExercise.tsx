@@ -206,11 +206,11 @@ export default function LogicExercise() {
                   <EulerBuilder 
                     title="Diagramă Interactivă — Rezolvă exercițiul"
                     terms={[
-                      { id: 'A', label: 'Termenul A', color: EULER_COLORS.A.stroke, r: 90 },
-                      { id: 'B', label: 'Termenul B', color: EULER_COLORS.B.stroke, r: 90 },
-                      { id: 'C', label: 'Termenul C', color: EULER_COLORS.C.stroke, r: 40 },
-                      { id: 'D', label: 'Termenul D', color: EULER_COLORS.D.stroke, r: 40 },
-                      { id: 'E', label: 'Termenul E', color: EULER_COLORS.E.stroke, r: 45 },
+                      { id: 'A', label: 'Termenul A', color: EULER_COLORS.A.stroke, r: 75 },
+                      { id: 'B', label: 'Termenul B', color: EULER_COLORS.B.stroke, r: 75 },
+                      { id: 'C', label: 'Termenul C', color: EULER_COLORS.C.stroke, r: 35 },
+                      { id: 'D', label: 'Termenul D', color: EULER_COLORS.D.stroke, r: 35 },
+                      { id: 'E', label: 'Termenul E', color: EULER_COLORS.E.stroke, r: 40 },
                     ]}
                     rules={EULER_RULES}
                   />
