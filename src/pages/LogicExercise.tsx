@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Clock, HelpCircle, CheckCircle, ChevronDown, ChevronUp, Info, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Clock, HelpCircle, CheckCircle, ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { logicExercises } from '../data/logicExercises';
 import { useParams } from 'react-router-dom';
 import EulerDiagram from '../components/logic/EulerDiagram';
@@ -122,103 +122,117 @@ export default function LogicExercise() {
         <div style={{ paddingTop: 48, display: 'flex', flexDirection: 'column', gap: 64 }}>
 
           {/* Section 1: Navigation & Quick Info */}
+          {/* Section 1: Exercise Navigator */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
+            transition={{ duration: 0.35 }}
+            style={{
+              display: 'flex',
               alignItems: 'center',
-              padding: '16px 24px',
-              background: 'rgba(255, 255, 255, 0.02)',
-              backdropFilter: 'blur(10px)',
-              borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.3)',
-              gap: 20
+              gap: 16,
+              padding: '10px 16px',
+              background: 'var(--bg-card)',
+              borderRadius: 14,
+              border: '1px solid var(--border)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ 
-                fontSize: 12, 
-                fontWeight: 700, 
-                color: 'var(--text-muted)', 
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em'
-              }}>
-                Varianta:
-              </div>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {EULER_EXERCISES.map((_, i) => (
+            {/* Prev arrow */}
+            <button
+              onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
+              disabled={currentIdx === 0}
+              style={{
+                width: 32, height: 32,
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                background: 'transparent',
+                display: 'grid', placeItems: 'center',
+                cursor: currentIdx === 0 ? 'default' : 'pointer',
+                opacity: currentIdx === 0 ? 0.3 : 1,
+                transition: 'all 0.15s',
+                flexShrink: 0,
+                color: 'var(--text-primary)',
+              }}
+              onMouseEnter={e => { if (currentIdx !== 0) e.currentTarget.style.background = 'var(--bg-muted)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M9 11L5 7L9 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            {/* Step track */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 5, position: 'relative' }}>
+              {EULER_EXERCISES.map((_, i) => {
+                const isActive = currentIdx === i;
+                const isPast = i < currentIdx;
+                return (
                   <button
                     key={i}
                     onClick={() => setCurrentIdx(i)}
+                    title={`Varianta ${i + 1}`}
                     style={{
-                      width: 36, height: 36, borderRadius: 10,
-                      display: 'grid', placeItems: 'center',
-                      fontSize: 14, fontWeight: 700,
+                      flex: isActive ? '0 0 auto' : 1,
+                      height: 6,
+                      borderRadius: 99,
+                      border: 'none',
                       cursor: 'pointer',
-                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-                      border: '1px solid',
-                      background: currentIdx === i ? 'var(--logic)' : 'rgba(255, 255, 255, 0.03)',
-                      color: currentIdx === i ? 'white' : 'var(--text-secondary)',
-                      borderColor: currentIdx === i ? 'var(--logic)' : 'rgba(255, 255, 255, 0.1)',
-                      boxShadow: currentIdx === i ? '0 0 15px var(--logic-dim)' : 'none',
-                      transform: currentIdx === i ? 'scale(1.05)' : 'scale(1)',
+                      padding: 0,
+                      transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)',
+                      background: isActive
+                        ? 'var(--logic)'
+                        : isPast
+                          ? 'var(--logic-light)'
+                          : 'var(--border)',
+                      minWidth: isActive ? 28 : undefined,
+                      opacity: isActive ? 1 : isPast ? 0.55 : 0.35,
                     }}
                     onMouseEnter={e => {
-                      if (currentIdx !== i) {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
-                      }
+                      if (!isActive) e.currentTarget.style.opacity = '0.7';
                     }}
                     onMouseLeave={e => {
-                      if (currentIdx !== i) {
-                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
-                      }
+                      if (!isActive) e.currentTarget.style.opacity = isPast ? '0.55' : '0.35';
                     }}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
+                  />
+                );
+              })}
             </div>
 
-            <div style={{ display: 'flex', gap: 10 }}>
-              <button 
-                onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
-                disabled={currentIdx === 0}
-                style={{ 
-                  width: 40, height: 40, 
-                  borderRadius: 12, 
-                  display: 'grid', placeItems: 'center',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  color: currentIdx === 0 ? 'rgba(255, 255, 255, 0.1)' : 'var(--text-primary)',
-                  cursor: currentIdx === 0 ? 'default' : 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button 
-                onClick={() => setCurrentIdx(Math.min(EULER_EXERCISES.length - 1, currentIdx + 1))}
-                disabled={currentIdx === EULER_EXERCISES.length - 1}
-                style={{ 
-                  width: 40, height: 40, 
-                  borderRadius: 12, 
-                  display: 'grid', placeItems: 'center',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  background: 'rgba(255, 255, 255, 0.03)',
-                  color: currentIdx === EULER_EXERCISES.length - 1 ? 'rgba(255, 255, 255, 0.1)' : 'var(--text-primary)',
-                  cursor: currentIdx === EULER_EXERCISES.length - 1 ? 'default' : 'pointer',
-                  transition: 'all 0.2s'
-                }}
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
+            {/* Counter label */}
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 11,
+              color: 'var(--text-muted)',
+              letterSpacing: '0.08em',
+              flexShrink: 0,
+              userSelect: 'none',
+            }}>
+              {String(currentIdx + 1).padStart(2, '0')}<span style={{ opacity: 0.4 }}> / </span>{String(EULER_EXERCISES.length).padStart(2, '0')}
+            </span>
+
+            {/* Next arrow */}
+            <button
+              onClick={() => setCurrentIdx(Math.min(EULER_EXERCISES.length - 1, currentIdx + 1))}
+              disabled={currentIdx === EULER_EXERCISES.length - 1}
+              style={{
+                width: 32, height: 32,
+                borderRadius: 8,
+                border: '1px solid var(--border)',
+                background: 'transparent',
+                display: 'grid', placeItems: 'center',
+                cursor: currentIdx === EULER_EXERCISES.length - 1 ? 'default' : 'pointer',
+                opacity: currentIdx === EULER_EXERCISES.length - 1 ? 0.3 : 1,
+                transition: 'all 0.15s',
+                flexShrink: 0,
+                color: 'var(--text-primary)',
+              }}
+              onMouseEnter={e => { if (currentIdx !== EULER_EXERCISES.length - 1) e.currentTarget.style.background = 'var(--bg-muted)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                <path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
           </motion.div>
 
           {/* Section 2: Theory recap */}
@@ -257,10 +271,10 @@ export default function LogicExercise() {
 
               <StepCard step={2} title="Construiește diagrama Euler">
                 <p style={{ marginBottom: 20 }}>
-                  Trage termenii din partea de jos în spațiul diagramei pentru a reprezenta raporturile corect. 
+                  Trage termenii din partea de jos în spațiul diagramei pentru a reprezenta raporturile corect.
                 </p>
                 <div style={{ marginTop: 16 }}>
-                  <EulerBuilder 
+                  <EulerBuilder
                     key={`builder-${currentIdx}`}
                     title={currentExercise.title}
                     statement={currentExercise.statement}
@@ -384,7 +398,7 @@ function StepCard({ step, title, children }: { step: number; title: string; chil
         </div>
         <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', flex: 1 }}>{title}</span>
         {open ? <ChevronUp size={15} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
-               : <ChevronDown size={15} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />}
+          : <ChevronDown size={15} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />}
       </button>
       <AnimatePresence initial={false}>
         {open && (
