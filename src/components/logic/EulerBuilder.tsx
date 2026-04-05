@@ -269,32 +269,32 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
       const d = Math.hypot(posA.x - posB.x, posA.y - posB.y);
 
       switch (rule.relation) {
-    case 'identitate':
-      if (d >= 14)
-        errors.push(`${rule.a} și ${rule.b} trebuie să fie suprapuși complet (identitate ≡).`);
-      break;
+        case 'identitate':
+          if (d >= 14)
+            errors.push(`${rule.a} și ${rule.b} trebuie să fie suprapuși complet (identitate ≡).`);
+          break;
 
-    case 'subordonare': {
-      // rule.a is the species → must be fully inside rule.b
-      const inner = rA, outer = rB;
-      if (d + inner > outer + 10)
-        errors.push(`${rule.a} trebuie să fie complet în interiorul lui ${rule.b} (subordonare ⊂).`);
-      break;
-    }
+        case 'subordonare': {
+          // rule.a is the species → must be fully inside rule.b
+          const inner = rA, outer = rB;
+          if (d + inner > outer + 10)
+            errors.push(`${rule.a} trebuie să fie complet în interiorul lui ${rule.b} (subordonare ⊂).`);
+          break;
+        }
 
-    case 'incrucisare': {
-      const rel = detectRelation(posA.x, posA.y, rA, posB.x, posB.y, rB);
-      if (rel !== 'incrucisare')
-        errors.push(`${rule.a} și ${rule.b} trebuie să se intersecteze parțial (încrucișare ∩).`);
-      break;
-    }
+        case 'incrucisare': {
+          const rel = detectRelation(posA.x, posA.y, rA, posB.x, posB.y, rB);
+          if (rel !== 'incrucisare')
+            errors.push(`${rule.a} și ${rule.b} trebuie să se intersecteze parțial (încrucișare ∩).`);
+          break;
+        }
 
-    case 'contrarietate':
-    case 'contradictie':
-    case 'opozitie':
-      if (d <= rA + rB - 6)
-        errors.push(`${rule.a} și ${rule.b} trebuie să fie complet separați (raport de ${rule.relation}).`);
-      break;
+        case 'contrarietate':
+        case 'contradictie':
+        case 'opozitie':
+          if (d <= rA + rB - 6)
+            errors.push(`${rule.a} și ${rule.b} trebuie să fie complet separați (raport de ${rule.relation}).`);
+          break;
       }
     }
 
@@ -311,11 +311,9 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
   return (
     <div
       style={{
-        background: 'var(--bg-card)',
         border: '1px solid var(--border)',
-        borderRadius: 20,
+        borderRadius: 16,
         overflow: 'hidden',
-        boxShadow: '0 12px 48px rgba(0,0,0,0.35)',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -323,79 +321,63 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
       {/* ── Header ── */}
       <div
         style={{
-          padding: '22px 28px',
+          padding: '14px 20px',
           borderBottom: '1px solid var(--border)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          background: 'rgba(255,255,255,0.01)',
           gap: 12,
         }}
       >
-        <div>
-          <div
-            style={{
-              fontSize: 10,
-              fontFamily: 'var(--font-mono)',
-              color: 'var(--logic)',
-              letterSpacing: '0.16em',
-              textTransform: 'uppercase',
-              marginBottom: 5,
-              fontWeight: 700,
-            }}
-          >
-            BacPrep · Logic Lab
-          </div>
-          <div
-            style={{
-              fontSize: 18,
-              fontWeight: 800,
-              color: 'var(--text-primary)',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            {title || 'Constructor Diagrame Euler'}
-          </div>
-        </div>
+        <span style={{
+          fontSize: 13,
+          fontWeight: 600,
+          color: 'var(--text-primary)',
+          letterSpacing: '-0.01em',
+        }}>
+          {title || 'Constructor Diagrame Euler'}
+        </span>
 
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div style={{ display: 'flex', gap: 6 }}>
           <button
             onClick={handleReset}
+            title="Resetează"
             style={{
-              padding: '7px 14px',
-              borderRadius: 10,
-              background: 'var(--bg-muted)',
+              width: 32, height: 32,
+              borderRadius: 8,
+              background: 'transparent',
               border: '1px solid var(--border)',
               color: 'var(--text-muted)',
               cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              fontSize: 12,
-              fontWeight: 500,
-              fontFamily: 'var(--font-mono)',
-              letterSpacing: '0.04em',
+              display: 'grid', placeItems: 'center',
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'var(--bg-muted)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-muted)';
             }}
           >
             <RefreshCw size={13} />
-            Resetează
           </button>
           <button
             onClick={() => setShowHelp(h => !h)}
+            title="Afișează cerințele"
             style={{
-              padding: 8,
-              borderRadius: 10,
-              background: showHelp ? 'var(--logic-dim)' : 'var(--bg-muted)',
+              width: 32, height: 32,
+              borderRadius: 8,
+              background: showHelp ? 'var(--logic-dim)' : 'transparent',
               border: `1px solid ${showHelp ? 'var(--logic-border)' : 'var(--border)'}`,
               color: showHelp ? 'var(--logic)' : 'var(--text-muted)',
               cursor: 'pointer',
-              display: 'grid',
-              placeItems: 'center',
+              display: 'grid', placeItems: 'center',
               transition: 'all 0.15s',
             }}
-            title="Afișează cerințele"
           >
-            <HelpCircle size={17} />
+            <HelpCircle size={14} />
           </button>
         </div>
       </div>
@@ -403,19 +385,19 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
       {/* ── Statement ── */}
       {statement && (
         <div style={{
-          padding: '16px 28px',
-          background: 'rgba(99,102,241,0.03)',
+          padding: '12px 20px',
           borderBottom: '1px solid var(--border)',
-          fontSize: 14,
+          fontSize: 13,
           color: 'var(--text-secondary)',
-          lineHeight: 1.6,
+          lineHeight: 1.65,
+          background: 'var(--bg-muted)',
         }}>
           {statement}
         </div>
       )}
 
       {/* ── SVG Canvas ── */}
-      <div style={{ position: 'relative', background: '#07070a', flexShrink: 0 }}>
+      <div style={{ position: 'relative', flexShrink: 0 }}>
         <svg
           ref={svgRef}
           viewBox={`0 0 ${W} ${H}`}
@@ -423,36 +405,31 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
             width: '100%',
             height: 'auto',
             display: 'block',
-            // IMPORTANT: disable browser touch gestures so our pointer events fire
             touchAction: 'none',
             userSelect: 'none',
             WebkitUserSelect: 'none',
+            background: '#0c0d10',
           }}
-          // Move/Up handlers on the SVG so they fire even when pointer
-          // moves between circles (pointer capture handles the rest)
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
-          // Cancel drag if pointer somehow leaves the SVG entirely
           onPointerLeave={handlePointerUp}
         >
-          {/* Background texture */}
           <defs>
-            <pattern id="eb-grid" width="24" height="24" patternUnits="userSpaceOnUse">
-              <circle cx="1.5" cy="1.5" r="1.5" fill="rgba(255,255,255,0.035)" />
+            <pattern id="eb-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="0.5" cy="0.5" r="0.5" fill="rgba(255,255,255,0.07)" />
             </pattern>
-            <radialGradient id="eb-center" cx="50%" cy="50%" r="60%">
-              <stop offset="0%" stopColor="rgba(99,102,241,0.04)" />
-              <stop offset="100%" stopColor="transparent" />
+            <radialGradient id="eb-vignette" cx="50%" cy="50%" r="70%">
+              <stop offset="0%" stopColor="transparent" />
+              <stop offset="100%" stopColor="rgba(0,0,0,0.45)" />
             </radialGradient>
             <filter id="eb-shadow">
-              <feDropShadow dx="0" dy="4" stdDeviation="8" floodOpacity="0.5" />
+              <feDropShadow dx="0" dy="3" stdDeviation="6" floodOpacity="0.4" />
             </filter>
           </defs>
 
           <rect width={W} height={H} fill="url(#eb-grid)" />
-          <rect width={W} height={H} fill="url(#eb-center)" />
+          <rect width={W} height={H} fill="url(#eb-vignette)" />
 
-          {/* Render all circles */}
           {terms.map(term => {
             const pos = getPos(term.id);
             const colors = EULER_COLORS[term.id as keyof typeof EULER_COLORS] ?? EULER_COLORS.A;
@@ -463,74 +440,34 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
             return (
               <g
                 key={term.id}
-                // The transform is always the live position from getPos().
-                // No Framer Motion drag prop → no coordinate system conflict.
                 transform={`translate(${pos.x},${pos.y})`}
                 onPointerDown={e => handlePointerDown(e, term.id)}
                 style={{ cursor: isDragging ? 'grabbing' : 'grab' }}
               >
-                {/* Magnetic snap glow ring — animated with SVG SMIL */}
                 {(isSnapping || isSnapTarget) && (
-                  <circle
-                    r={term.r + 8}
-                    fill="none"
-                    stroke={colors.stroke}
-                    strokeWidth="1.5"
-                    opacity="0.4"
-                  >
-                    <animate
-                      attributeName="r"
-                      values={`${term.r + 4};${term.r + 14};${term.r + 4}`}
-                      dur="1.1s"
-                      repeatCount="indefinite"
-                    />
-                    <animate
-                      attributeName="opacity"
-                      values="0.5;0.1;0.5"
-                      dur="1.1s"
-                      repeatCount="indefinite"
-                    />
+                  <circle r={term.r + 8} fill="none" stroke={colors.stroke} strokeWidth="1" opacity="0.35">
+                    <animate attributeName="r" values={`${term.r + 4};${term.r + 14};${term.r + 4}`} dur="1.1s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" values="0.4;0.08;0.4" dur="1.1s" repeatCount="indefinite" />
                   </circle>
                 )}
 
-                {/* Lift shadow when dragging */}
-                {isDragging && (
-                  <circle
-                    r={term.r}
-                    fill="rgba(0,0,0,0.4)"
-                    transform="translate(0, 6)"
-                    style={{ filter: 'blur(6px)' }}
-                  />
-                )}
-
-                {/* Main circle body */}
                 <circle
                   r={term.r}
                   fill={colors.fill}
-                  stroke={
-                    isSnapping || isSnapTarget
-                      ? 'rgba(255,255,255,0.65)'
-                      : isDragging
-                      ? colors.stroke
-                      : colors.stroke
-                  }
-                  strokeWidth={isSnapping || isSnapTarget || isDragging ? 2.5 : 2}
-                  opacity={isDragging ? 0.95 : 1}
+                  stroke={isSnapping || isSnapTarget ? 'rgba(255,255,255,0.5)' : colors.stroke}
+                  strokeWidth={isDragging ? 2 : 1.5}
+                  opacity={isDragging ? 0.92 : 1}
+                  filter={isDragging ? 'url(#eb-shadow)' : undefined}
                 />
 
-                {/* Letter badge — pinned to top of circle */}
-                <circle
-                  r={13}
-                  cy={-term.r + 4}
-                  fill={colors.stroke}
-                />
+                {/* Label inside circle */}
                 <text
                   textAnchor="middle"
-                  y={-term.r + 9}
-                  fontSize="12"
-                  fontWeight="900"
+                  y={5}
+                  fontSize="13"
+                  fontWeight="700"
                   fontFamily="var(--font-mono)"
-                  fill="white"
+                  fill={colors.stroke}
                   style={{ pointerEvents: 'none', userSelect: 'none' }}
                 >
                   {term.id}
@@ -544,84 +481,44 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
         <AnimatePresence>
           {showHelp && (
             <motion.div
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 12 }}
-              transition={{ duration: 0.18 }}
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.15 }}
               style={{
                 position: 'absolute',
-                top: 14,
-                right: 14,
-                width: 224,
-                background: 'rgba(9,9,12,0.97)',
-                border: '1px solid var(--border)',
-                borderRadius: 14,
-                padding: '16px 18px',
-                backdropFilter: 'blur(14px)',
+                top: 12,
+                right: 12,
+                width: 210,
+                background: 'rgba(12,13,16,0.96)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: 12,
+                padding: '14px 16px',
+                backdropFilter: 'blur(12px)',
                 zIndex: 20,
               }}
             >
-              <div
-                style={{
-                  fontSize: 10,
-                  fontFamily: 'var(--font-mono)',
-                  color: 'var(--logic)',
-                  letterSpacing: '0.12em',
-                  textTransform: 'uppercase',
-                  fontWeight: 700,
-                  marginBottom: 12,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
-                <Info size={12} />
+              <div style={{
+                fontSize: 10,
+                fontFamily: 'var(--font-mono)',
+                color: 'var(--logic)',
+                letterSpacing: '0.1em',
+                textTransform: 'uppercase',
+                fontWeight: 700,
+                marginBottom: 10,
+              }}>
                 Cerințe
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {rules.map((r, i) => (
-                  <div
-                    key={i}
-                    style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55 }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontWeight: 800,
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      {r.a}
-                    </span>{' '}
-                    <span style={{ color: 'var(--logic)', fontWeight: 600 }}>
-                      {r.relation === 'identitate'
-                        ? '≡'
-                        : r.relation === 'subordonare'
-                        ? '⊂'
-                        : r.relation === 'incrucisare'
-                        ? '∩'
-                        : '⊥'}
-                    </span>{' '}
-                    <span
-                      style={{
-                        fontFamily: 'var(--font-mono)',
-                        fontWeight: 800,
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      {r.b}
-                    </span>{' '}
-                    <span style={{ color: 'var(--text-muted)', fontSize: 11 }}>
-                      (
-                      {r.relation === 'identitate'
-                        ? 'identitate'
-                        : r.relation === 'subordonare'
-                        ? 'subordonare'
-                        : r.relation === 'incrucisare'
-                        ? 'încrucișare'
-                        : 'contrarietate'}
-                      )
+                  <div key={i} style={{ fontSize: 12, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{r.a}</span>
+                    {' '}
+                    <span style={{ color: 'var(--logic)' }}>
+                      {r.relation === 'identitate' ? '≡' : r.relation === 'subordonare' ? '⊂' : r.relation === 'incrucisare' ? '∩' : '⊥'}
                     </span>
+                    {' '}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{r.b}</span>
                   </div>
                 ))}
               </div>
@@ -633,87 +530,62 @@ export default function EulerBuilder({ terms, rules, title, statement, onSuccess
       {/* ── Footer ── */}
       <div
         style={{
-          padding: '18px 28px',
+          padding: '12px 20px',
           borderTop: '1px solid var(--border)',
-          background: 'rgba(255,255,255,0.01)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 18,
-          flexWrap: 'wrap',
+          gap: 16,
         }}
       >
-        {/* Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flex: 1, minWidth: 0 }}>
-          <div
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 10,
-              flexShrink: 0,
-              display: 'grid',
-              placeItems: 'center',
-              background:
-                feedback.type === 'ok'
-                  ? 'rgba(52,211,153,0.1)'
-                  : feedback.type === 'err'
-                  ? 'rgba(192,57,43,0.1)'
-                  : 'var(--bg-muted)',
-              transition: 'background 0.2s',
-            }}
-          >
-            {feedback.type === 'ok' ? (
-              <CheckCircle size={20} color="var(--green)" />
-            ) : feedback.type === 'err' ? (
-              <XCircle size={20} color="var(--accent)" />
-            ) : (
-              <Magnet size={18} color="var(--text-muted)" />
-            )}
-          </div>
-          <p
-            style={{
-              fontSize: 13,
-              margin: 0,
-              fontWeight: 500,
-              lineHeight: 1.5,
-              color:
-                feedback.type === 'ok'
-                  ? 'var(--green)'
-                  : feedback.type === 'err'
-                  ? 'var(--accent)'
-                  : 'var(--text-muted)',
-            }}
-          >
-            {feedback.msg ||
-              'Sfat: A și B sunt identici — apropie-i și se magnetizează automat.'}
+        {/* Status strip */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
+          <div style={{
+            width: 6, height: 6, borderRadius: '50%', flexShrink: 0,
+            background:
+              feedback.type === 'ok' ? 'var(--green)'
+                : feedback.type === 'err' ? 'var(--accent)'
+                  : 'var(--border)',
+            transition: 'background 0.2s',
+          }} />
+          <p style={{
+            fontSize: 12, margin: 0, lineHeight: 1.5,
+            color: feedback.type === 'ok'
+              ? 'var(--green)'
+              : feedback.type === 'err'
+                ? 'var(--accent)'
+                : 'var(--text-muted)',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+          }}>
+            {feedback.msg || 'Trage cercurile pentru a reprezenta raporturile.'}
           </p>
         </div>
 
-        {/* Verify button */}
+        {/* Verify */}
         <button
           onClick={verify}
           style={{
-            height: 46,
-            padding: '0 30px',
-            background:
-              'linear-gradient(135deg, var(--logic) 0%, var(--logic-light) 100%)',
+            height: 36,
+            padding: '0 20px',
+            background: 'var(--logic)',
             border: 'none',
-            borderRadius: 12,
+            borderRadius: 8,
             color: 'white',
-            fontWeight: 700,
-            fontSize: 13,
+            fontWeight: 600,
+            fontSize: 12,
             cursor: 'pointer',
             flexShrink: 0,
-            boxShadow: '0 4px 14px rgba(79,70,229,0.35)',
             letterSpacing: '-0.01em',
-            transition: 'opacity 0.15s, transform 0.15s',
+            transition: 'opacity 0.15s, transform 0.1s',
           }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
+          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
           onMouseDown={e => (e.currentTarget.style.transform = 'scale(0.97)')}
           onMouseUp={e => (e.currentTarget.style.transform = 'scale(1)')}
         >
-          Verifică rezolvarea
+          Verifică
         </button>
       </div>
     </div>
