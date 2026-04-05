@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Clock, HelpCircle, CheckCircle, ChevronDown, ChevronUp, Info } from 'lucide-react';
+import { ArrowLeft, Clock, HelpCircle, CheckCircle, ChevronDown, ChevronUp, Info, ChevronLeft, ChevronRight } from 'lucide-react';
 import { logicExercises } from '../data/logicExercises';
 import { useParams } from 'react-router-dom';
 import EulerDiagram from '../components/logic/EulerDiagram';
@@ -123,86 +123,100 @@ export default function LogicExercise() {
 
           {/* Section 1: Navigation & Quick Info */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             style={{ 
               display: 'flex', 
               justifyContent: 'space-between', 
               alignItems: 'center',
-              padding: '12px 20px',
-              background: 'var(--bg-muted)',
-              borderRadius: 12,
-              border: '1px solid var(--border)'
+              padding: '16px 24px',
+              background: 'rgba(255, 255, 255, 0.02)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              boxShadow: '0 8px 32px -4px rgba(0, 0, 0, 0.3)',
+              gap: 20
             }}
           >
-            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
-              Alege varianta:
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ 
+                fontSize: 12, 
+                fontWeight: 700, 
+                color: 'var(--text-muted)', 
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+              }}>
+                Varianta:
+              </div>
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {EULER_EXERCISES.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentIdx(i)}
+                    style={{
+                      width: 36, height: 36, borderRadius: 10,
+                      display: 'grid', placeItems: 'center',
+                      fontSize: 14, fontWeight: 700,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                      border: '1px solid',
+                      background: currentIdx === i ? 'var(--logic)' : 'rgba(255, 255, 255, 0.03)',
+                      color: currentIdx === i ? 'white' : 'var(--text-secondary)',
+                      borderColor: currentIdx === i ? 'var(--logic)' : 'rgba(255, 255, 255, 0.1)',
+                      boxShadow: currentIdx === i ? '0 0 15px var(--logic-dim)' : 'none',
+                      transform: currentIdx === i ? 'scale(1.05)' : 'scale(1)',
+                    }}
+                    onMouseEnter={e => {
+                      if (currentIdx !== i) {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)';
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      if (currentIdx !== i) {
+                        e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                        e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                      }
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {EULER_EXERCISES.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentIdx(i)}
-                  style={{
-                    width: 32, height: 32, borderRadius: 6,
-                    display: 'grid', placeItems: 'center',
-                    fontSize: 13, fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all 0.15s ease',
-                    border: '1px solid',
-                    background: currentIdx === i ? 'var(--logic)' : 'var(--bg-card)',
-                    color: currentIdx === i ? 'white' : 'var(--text-secondary)',
-                    borderColor: currentIdx === i ? 'var(--logic)' : 'var(--border)',
-                  }}
-                  onMouseEnter={e => {
-                    if (currentIdx !== i) {
-                      e.currentTarget.style.borderColor = 'var(--logic-border)';
-                      e.currentTarget.style.color = 'var(--logic)';
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    if (currentIdx !== i) {
-                      e.currentTarget.style.borderColor = 'var(--border)';
-                      e.currentTarget.style.color = 'var(--text-secondary)';
-                    }
-                  }}
-                >
-                  {i + 1}
-                </button>
-              ))}
-            </div>
-            <div style={{ display: 'flex', gap: 8, marginLeft: 'auto' }}>
+
+            <div style={{ display: 'flex', gap: 10 }}>
               <button 
                 onClick={() => setCurrentIdx(Math.max(0, currentIdx - 1))}
                 disabled={currentIdx === 0}
                 style={{ 
-                  padding: '6px 12px', 
-                  borderRadius: 8, 
-                  border: '1px solid var(--border)',
-                  background: currentIdx === 0 ? 'transparent' : 'var(--bg-card)',
-                  color: currentIdx === 0 ? 'var(--text-muted)' : 'var(--text-primary)',
-                  fontSize: 13,
+                  width: 40, height: 40, 
+                  borderRadius: 12, 
+                  display: 'grid', placeItems: 'center',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  color: currentIdx === 0 ? 'rgba(255, 255, 255, 0.1)' : 'var(--text-primary)',
                   cursor: currentIdx === 0 ? 'default' : 'pointer',
-                  opacity: currentIdx === 0 ? 0.5 : 1
+                  transition: 'all 0.2s'
                 }}
               >
-                Anterior
+                <ChevronLeft size={20} />
               </button>
               <button 
                 onClick={() => setCurrentIdx(Math.min(EULER_EXERCISES.length - 1, currentIdx + 1))}
                 disabled={currentIdx === EULER_EXERCISES.length - 1}
                 style={{ 
-                  padding: '6px 12px', 
-                  borderRadius: 8, 
-                  border: '1px solid var(--border)',
-                  background: currentIdx === EULER_EXERCISES.length - 1 ? 'transparent' : 'var(--bg-card)',
-                  color: currentIdx === EULER_EXERCISES.length - 1 ? 'var(--text-muted)' : 'var(--text-primary)',
-                  fontSize: 13,
+                  width: 40, height: 40, 
+                  borderRadius: 12, 
+                  display: 'grid', placeItems: 'center',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  color: currentIdx === EULER_EXERCISES.length - 1 ? 'rgba(255, 255, 255, 0.1)' : 'var(--text-primary)',
                   cursor: currentIdx === EULER_EXERCISES.length - 1 ? 'default' : 'pointer',
-                  opacity: currentIdx === EULER_EXERCISES.length - 1 ? 0.5 : 1
+                  transition: 'all 0.2s'
                 }}
               >
-                Următor
+                <ChevronRight size={20} />
               </button>
             </div>
           </motion.div>
